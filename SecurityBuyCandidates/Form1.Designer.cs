@@ -89,7 +89,9 @@
             this.SecurityDescription = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MarketType = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.SecurityGroupTitle = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.BuyerStrength = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.AvgGrowthPercent = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.OneMonthProfit = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Comment = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -213,7 +215,9 @@
             this.SecurityDescription,
             this.MarketType,
             this.SecurityGroupTitle,
+            this.BuyerStrength,
             this.AvgGrowthPercent,
+            this.OneMonthProfit,
             this.Comment});
             this.dataGridView1.Location = new System.Drawing.Point(6, 46);
             this.dataGridView1.Name = "dataGridView1";
@@ -746,43 +750,59 @@
             // 
             // SecurityName
             // 
-            this.SecurityName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCellsExceptHeader;
+            this.SecurityName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.SecurityName.HeaderText = "SecurityName";
             this.SecurityName.Name = "SecurityName";
             this.SecurityName.ReadOnly = true;
-            this.SecurityName.Width = 21;
+            this.SecurityName.Width = 98;
             // 
             // SecurityDescription
             // 
-            this.SecurityDescription.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCellsExceptHeader;
+            this.SecurityDescription.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.SecurityDescription.HeaderText = "SecurityDescription";
             this.SecurityDescription.Name = "SecurityDescription";
             this.SecurityDescription.ReadOnly = true;
-            this.SecurityDescription.Width = 21;
+            this.SecurityDescription.Width = 123;
             // 
             // MarketType
             // 
-            this.MarketType.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCellsExceptHeader;
+            this.MarketType.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.MarketType.HeaderText = "MarketType";
             this.MarketType.Name = "MarketType";
             this.MarketType.ReadOnly = true;
-            this.MarketType.Width = 21;
+            this.MarketType.Width = 89;
             // 
             // SecurityGroupTitle
             // 
-            this.SecurityGroupTitle.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCellsExceptHeader;
+            this.SecurityGroupTitle.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.SecurityGroupTitle.HeaderText = "SecurityGroupTitle";
             this.SecurityGroupTitle.Name = "SecurityGroupTitle";
             this.SecurityGroupTitle.ReadOnly = true;
-            this.SecurityGroupTitle.Width = 21;
+            this.SecurityGroupTitle.Width = 119;
+            // 
+            // BuyerStrength
+            // 
+            this.BuyerStrength.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.BuyerStrength.HeaderText = "BuyerStrength";
+            this.BuyerStrength.Name = "BuyerStrength";
+            this.BuyerStrength.ReadOnly = true;
+            this.BuyerStrength.Width = 99;
             // 
             // AvgGrowthPercent
             // 
-            this.AvgGrowthPercent.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCellsExceptHeader;
+            this.AvgGrowthPercent.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.AvgGrowthPercent.HeaderText = "AvgGrowthPercent";
             this.AvgGrowthPercent.Name = "AvgGrowthPercent";
             this.AvgGrowthPercent.ReadOnly = true;
-            this.AvgGrowthPercent.Width = 21;
+            this.AvgGrowthPercent.Width = 122;
+            // 
+            // OneMonthProfit
+            // 
+            this.OneMonthProfit.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.OneMonthProfit.HeaderText = "OneMonthProfit";
+            this.OneMonthProfit.Name = "OneMonthProfit";
+            this.OneMonthProfit.ReadOnly = true;
+            this.OneMonthProfit.Width = 106;
             // 
             // Comment
             // 
@@ -887,7 +907,9 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn SecurityDescription;
         private System.Windows.Forms.DataGridViewTextBoxColumn MarketType;
         private System.Windows.Forms.DataGridViewTextBoxColumn SecurityGroupTitle;
+        private System.Windows.Forms.DataGridViewTextBoxColumn BuyerStrength;
         private System.Windows.Forms.DataGridViewTextBoxColumn AvgGrowthPercent;
+        private System.Windows.Forms.DataGridViewTextBoxColumn OneMonthProfit;
         private System.Windows.Forms.DataGridViewTextBoxColumn Comment;
     }
 }
