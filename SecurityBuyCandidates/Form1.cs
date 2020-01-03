@@ -284,7 +284,7 @@ namespace SecurityBuyCandidates
 
                 Growth Growth = CurrentGrowth(PriceList);
 
-                if ((Growth.Percent / Growth.Days >= 1.0) && ((Growth.Days >= nudMinGrowth.Value) && (Growth.Days <= 15)) && ((Growth.Percent >= (double)nudMinGrowthPercent.Value) && (Growth.Percent <= (double)nudMaxGrowthPercent.Value)))
+                if ((Growth.Percent / Growth.Days >= 2.0) && ((Growth.Days - 1 >= nudMinGrowth.Value) && (Growth.Days - 1 <= 15)) && ((Growth.Percent >= (double)nudMinGrowthPercent.Value) && (Growth.Percent <= (double)nudMaxGrowthPercent.Value)))
                 //if (((Growth.Days >= nudMinGrowth.Value) && (Growth.Days <= 15)) && ((Growth.Percent >= (double)nudMinGrowthPercent.Value) && (Growth.Percent <= (double)nudMaxGrowthPercent.Value)))
                 {
                     dataGridView1.Invoke(new Action(
@@ -295,7 +295,7 @@ namespace SecurityBuyCandidates
                                 dataGridView1.Rows[index].Cells["SecurityDescription"].Value = Security.SecurityDescription;
                                 dataGridView1.Rows[index].Cells["MarketType"].Value = Security.MarketType;
                                 dataGridView1.Rows[index].Cells["SecurityGroupTitle"].Value = Security.SecurityGroupTitle;
-                                dataGridView1.Rows[index].Cells["Comment"].Value = Security.Comment + string.Format(" Current Growth Percent: {0}, Current Growth Days: {1}.", Math.Round(Growth.Percent, 2), Growth.Days);
+                                dataGridView1.Rows[index].Cells["Comment"].Value = Security.Comment + string.Format(" Current Growth Percent: {0}, Current Growth Days: {1}.", Math.Round(Growth.Percent, 2), Growth.Days - 1);
                                 dataGridView1.Rows[index].Cells["AvgGrowthPercent"].Value = Math.Round(Growth.Percent / Growth.Days, 2);
                                 dataGridView1.Rows[index].Cells["OneMonthProfit"].Value = OneMonthProfit;
 
@@ -317,7 +317,7 @@ namespace SecurityBuyCandidates
         {
             DB_BourseEntities ctx = new DB_BourseEntities();
 
-            List<int> GoodSecurityGroupIDs = new List<int> { 45,44,40,42,34,27,24,26,8,11,17,35,15,30,38,18,3,23,1,33,47 };
+            List<int> GoodSecurityGroupIDs = new List<int> { 45,44,40,42,34,27,24,26,8,11,17,35,15,30,38,18,3,23,1,33,47,43 };
 
             //List<SecurityGroup> GoodSecurityGroups = ctx.tblSecurityGroup.Where(x => GoodSecurityGroupIDs.Contains(x.SecurityGroupID)).Select(x => new SecurityGroup { SecurityGroupID = x.SecurityGroupID, SecurityGroupTitle = x.SecurityGroupTitle }).ToList();
 
@@ -358,7 +358,7 @@ namespace SecurityBuyCandidates
                     double firstPrice = 0;
                     double lastPrice = 0;
 
-                    //if (Security.SecurityID== 2440)
+                    //if (Security.SecurityID== 2312)
                     {
                         for (int j = 0; j < PriceList.Count - 26; j++)
                         {
@@ -392,15 +392,15 @@ namespace SecurityBuyCandidates
                                     flag = true;
                                     break;
                                 }
-                                else if ((k >= 10) && (k < 20) && (l + 1 > k))
-                                {
-                                    flag = false;
-                                    break;
-                                }
-                                else
-                                {
-                                    k = 1;
-                                }
+                                //else if ((k > 10) && (k < 20) && (l + 1 > k))
+                                //{
+                                //    flag = false;
+                                //    break;
+                                //}
+
+
+                                k = 1;
+                                
                             }
 
                         }
@@ -410,7 +410,7 @@ namespace SecurityBuyCandidates
                     if (flag)
                     {
                         //if ((k >= 20) && (l + 1 - k >= nudMinCorrection.Value)) //&& (l + 1 - k <= nudMaxCorrection.Value))
-                        if ((k >= 20) && (l + 1 - k >= 20))
+                        if ((k >= 20) && (l + 1 - k >= 20 || l + 1 - k <= 10))
                         {
                             //Security.Comment = string.Format("Growth for {0} days, Correction for {1} days, over {2} days.", k, l + 1 - k, l + 1);
                             GoodSecurities.Add(Security);
