@@ -284,7 +284,7 @@ namespace SecurityBuyCandidates
 
                 Growth Growth = CurrentGrowth(PriceList);
 
-                if ((Growth.Percent / Growth.Days >= 2.0) && ((Growth.Days - 1 >= nudMinGrowth.Value) && (Growth.Days - 1 <= 15)) && ((Growth.Percent >= (double)nudMinGrowthPercent.Value) && (Growth.Percent <= (double)nudMaxGrowthPercent.Value)))
+                if ((EFI(PriceList) > 0) && (Growth.Percent / Growth.Days > 1.0) && ((Growth.Days - 1 >= nudMinGrowth.Value) && (Growth.Days - 1 <= 15)) && ((Growth.Percent >= (double)nudMinGrowthPercent.Value) && (Growth.Percent <= (double)nudMaxGrowthPercent.Value)))
                 //if (((Growth.Days >= nudMinGrowth.Value) && (Growth.Days <= 15)) && ((Growth.Percent >= (double)nudMinGrowthPercent.Value) && (Growth.Percent <= (double)nudMaxGrowthPercent.Value)))
                 {
                     dataGridView1.Invoke(new Action(
@@ -317,7 +317,7 @@ namespace SecurityBuyCandidates
         {
             DB_BourseEntities ctx = new DB_BourseEntities();
 
-            List<int> GoodSecurityGroupIDs = new List<int> { 45,44,40,42,34,27,24,26,8,11,17,35,15,30,38,18,3,23,1,33,47,43 };
+            List<int> GoodSecurityGroupIDs = new List<int> { 45,44,40,42,34,27,24,26,8,11,17,35,15,30,38,18,3,23,1,33,47,43,31 };
 
             //List<SecurityGroup> GoodSecurityGroups = ctx.tblSecurityGroup.Where(x => GoodSecurityGroupIDs.Contains(x.SecurityGroupID)).Select(x => new SecurityGroup { SecurityGroupID = x.SecurityGroupID, SecurityGroupTitle = x.SecurityGroupTitle }).ToList();
 
@@ -358,7 +358,7 @@ namespace SecurityBuyCandidates
                     double firstPrice = 0;
                     double lastPrice = 0;
 
-                    //if (Security.SecurityID== 2312)
+                    //if (Security.SecurityID== 2365)
                     {
                         for (int j = 0; j < PriceList.Count - 26; j++)
                         {
