@@ -5,22 +5,19 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="8c3544a4c8e54eafb0342c8ba3e2c48c" Name="Diagram1">
-        <EntityTypeShape EntityType="DB_BourseModel.tblBaseInfo" Width="1.5" PointX="0.75" PointY="5.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="DB_BourseModel.tblDetailInfo" Width="1.5" PointX="3" PointY="5.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="DB_BourseModel.tblSecurity" Width="1.5" PointX="5.25" PointY="4.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="DB_BourseModel.tblSecurityGroup" Width="1.5" PointX="3" PointY="2.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="DB_BourseModel.tblSecurityHistory" Width="1.5" PointX="7.5" PointY="4.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="DB_BourseModel.tblSecurityHistoryAgah" Width="1.5" PointX="10.5" PointY="4.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="DB_BourseModel.vwSecurity" Width="1.5" PointX="0.75" PointY="8.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="DB_BourseModel.vwSecurityHistory" Width="1.5" PointX="2.75" PointY="9.75" IsExpanded="true" />
-        <AssociationConnector Association="DB_BourseModel.FK_tblDetailInfo_tblBaseInfo" ManuallyRouted="false" />
-        <AssociationConnector Association="DB_BourseModel.FK_tblSecurity_tblDetailInfo_MarketType" ManuallyRouted="false" />
-        <AssociationConnector Association="DB_BourseModel.FK_tblSecurity_tblDetailInfo_SecurityType" ManuallyRouted="false" />
-        <AssociationConnector Association="DB_BourseModel.FK_tblSecurityHistory_tblDetailInfo_AdjustedType" ManuallyRouted="false" />
-        <AssociationConnector Association="DB_BourseModel.FK_tblSecurityHistory_tblDetailInfo_AdjustedType2" ManuallyRouted="false" />
-        <AssociationConnector Association="DB_BourseModel.FK_tblSecurity_tblSecurityGroup" ManuallyRouted="false" />
-        <AssociationConnector Association="DB_BourseModel.FK_tblSecurityHistory_tblSecurity" ManuallyRouted="false" />
-        <AssociationConnector Association="DB_BourseModel.FK_tblSecurityHistory_tblSecurity2" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="DB_BourseModel.tblBaseInfo" Width="1.5" PointX="0.75" PointY="3.625" />
+        <EntityTypeShape EntityType="DB_BourseModel.tblDetailInfo" Width="1.5" PointX="3" PointY="3.375" />
+        <EntityTypeShape EntityType="DB_BourseModel.tblSecurity" Width="1.5" PointX="5.25" PointY="2.25" />
+        <EntityTypeShape EntityType="DB_BourseModel.tblSecurityGroup" Width="1.5" PointX="3" PointY="0.75" />
+        <EntityTypeShape EntityType="DB_BourseModel.tblSecurityHistory" Width="1.5" PointX="7.5" PointY="2.125" />
+        <EntityTypeShape EntityType="DB_BourseModel.vwSecurity" Width="1.5" PointX="0.75" PointY="6.75" />
+        <EntityTypeShape EntityType="DB_BourseModel.vwSecurityHistory" Width="1.5" PointX="2.75" PointY="7.75" />
+        <AssociationConnector Association="DB_BourseModel.FK_tblDetailInfo_tblBaseInfo" />
+        <AssociationConnector Association="DB_BourseModel.FK_tblSecurity_tblDetailInfo_MarketType" />
+        <AssociationConnector Association="DB_BourseModel.FK_tblSecurity_tblDetailInfo_SecurityType" />
+        <AssociationConnector Association="DB_BourseModel.FK_tblSecurityHistory_tblDetailInfo_AdjustedType3" />
+        <AssociationConnector Association="DB_BourseModel.FK_tblSecurity_tblSecurityGroup" />
+        <AssociationConnector Association="DB_BourseModel.FK_tblSecurityHistory_tblSecurity3" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

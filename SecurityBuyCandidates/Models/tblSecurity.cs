@@ -16,7 +16,6 @@ namespace SecurityBuyCandidates.Models
     {
         public tblSecurity()
         {
-            this.tblSecurityHistoryAgah = new HashSet<tblSecurityHistoryAgah>();
             this.tblSecurityHistory = new HashSet<tblSecurityHistory>();
         }
     
@@ -31,13 +30,14 @@ namespace SecurityBuyCandidates.Models
         public Nullable<int> AgahSecurityID { get; set; }
         public long TseID { get; set; }
         public int SecurityGroupID { get; set; }
+        public long SharesCount { get; set; }
+        public int EPS { get; set; }
         public Nullable<int> StatusID { get; set; }
         public string StatusDescription { get; set; }
     
         public virtual tblDetailInfo tblDetailInfo { get; set; }
         public virtual tblDetailInfo tblDetailInfo1 { get; set; }
         public virtual tblSecurityGroup tblSecurityGroup { get; set; }
-        public virtual ICollection<tblSecurityHistoryAgah> tblSecurityHistoryAgah { get; set; }
         public virtual ICollection<tblSecurityHistory> tblSecurityHistory { get; set; }
     }
 }

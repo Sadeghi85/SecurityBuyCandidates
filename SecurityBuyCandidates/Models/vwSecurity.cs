@@ -31,5 +31,7 @@ namespace SecurityBuyCandidates.Models
         public Nullable<int> StatusID { get; set; }
         public string StatusDescription { get; set; }
         public int Rahavard365ID { get; set; }
+        public long SharesCount { get; set; }
+        public int EPS { get; set; }
     }
 }

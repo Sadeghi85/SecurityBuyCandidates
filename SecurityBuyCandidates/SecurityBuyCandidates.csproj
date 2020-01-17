@@ -90,9 +90,6 @@
     <Compile Include="Models\tblSecurityHistory.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\tblSecurityHistoryAgah.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\vwSecurity.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>

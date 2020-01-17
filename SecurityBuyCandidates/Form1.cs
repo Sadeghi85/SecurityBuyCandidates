@@ -153,9 +153,9 @@ namespace SecurityBuyCandidates
 
             //if (Security.SecurityID== 2440)
             {
-                for (int j = 0; j < PriceList.Count - 26; j++)
+                for (int j = 0; j < PriceList.Count - nudWMA.Value; j++)
                 {
-                    double wma = WMA(PriceList, 26, j);
+                    double wma = WMA(PriceList, (int)nudWMA.Value, j);
 
                     l = j;
 
@@ -284,8 +284,7 @@ namespace SecurityBuyCandidates
 
                 Growth Growth = CurrentGrowth(PriceList);
 
-                if ((EFI(PriceList) > 0) && (Growth.Percent / Growth.Days > 1.0) && ((Growth.Days - 1 >= nudMinGrowth.Value) && (Growth.Days - 1 <= 15)) && ((Growth.Percent >= (double)nudMinGrowthPercent.Value) && (Growth.Percent <= (double)nudMaxGrowthPercent.Value)))
-                //if (((Growth.Days >= nudMinGrowth.Value) && (Growth.Days <= 15)) && ((Growth.Percent >= (double)nudMinGrowthPercent.Value) && (Growth.Percent <= (double)nudMaxGrowthPercent.Value)))
+                if ((Growth.Percent / Growth.Days > 1.0) && ((Growth.Days >= nudMinGrowthDays.Value) && (Growth.Days <= nudMaxGrowthDays.Value)) && ((Growth.Percent >= (double)nudMinGrowthPercent.Value) && (Growth.Percent <= (double)nudMaxGrowthPercent.Value)))
                 {
                     dataGridView1.Invoke(new Action(
                              () =>
@@ -295,7 +294,7 @@ namespace SecurityBuyCandidates
                                 dataGridView1.Rows[index].Cells["SecurityDescription"].Value = Security.SecurityDescription;
                                 dataGridView1.Rows[index].Cells["MarketType"].Value = Security.MarketType;
                                 dataGridView1.Rows[index].Cells["SecurityGroupTitle"].Value = Security.SecurityGroupTitle;
-                                dataGridView1.Rows[index].Cells["Comment"].Value = Security.Comment + string.Format(" Current Growth Percent: {0}, Current Growth Days: {1}.", Math.Round(Growth.Percent, 2), Growth.Days - 1);
+                                dataGridView1.Rows[index].Cells["Comment"].Value = Security.Comment + string.Format(" Current Growth Percent: {0}, Current Growth Days: {1}.", Math.Round(Growth.Percent, 2), Growth.Days);
                                 dataGridView1.Rows[index].Cells["AvgGrowthPercent"].Value = Math.Round(Growth.Percent / Growth.Days, 2);
                                 dataGridView1.Rows[index].Cells["OneMonthProfit"].Value = OneMonthProfit;
 
@@ -317,7 +316,7 @@ namespace SecurityBuyCandidates
         {
             DB_BourseEntities ctx = new DB_BourseEntities();
 
-            List<int> GoodSecurityGroupIDs = new List<int> { 45,44,40,42,34,27,24,26,8,11,17,35,15,30,38,18,3,23,1,33,47,43,31 };
+            List<int> GoodSecurityGroupIDs = new List<int> { 45,44,40,42,34,27,24,26,8,11,17,35,15,30,38,18,3,23,1,33,47,43,31,  16,22 };
 
             //List<SecurityGroup> GoodSecurityGroups = ctx.tblSecurityGroup.Where(x => GoodSecurityGroupIDs.Contains(x.SecurityGroupID)).Select(x => new SecurityGroup { SecurityGroupID = x.SecurityGroupID, SecurityGroupTitle = x.SecurityGroupTitle }).ToList();
 
@@ -341,7 +340,7 @@ namespace SecurityBuyCandidates
                 //List<int> tmp = new List<int>() { 2236, 2148, 2271, 2420, 2520 };
                 //List<vwSecurity> Securities = ctx.vwSecurity.Where(x => tmp.Contains(x.SecurityID)).OrderBy(x => x.SecurityName).ToList();
 
-                List<Security> Securities = ctx.vwSecurity.Where(x => x.SecurityTypeID == 6 && GoodSecurityGroupsList.Contains(x.SecurityGroupID)).Select(x => new Security {SecurityGroupID = x.SecurityGroupID, SecurityDescription=x.SecurityDescription,MarketType=x.MarketType,SecurityGroupTitle=x.SecurityGroupTitle,SecurityName=x.SecurityName, SecurityID=x.SecurityID }).OrderBy(x => x.SecurityName).ToList();
+                List<Security> Securities = ctx.vwSecurity.Where(x => x.SecurityTypeID == 6 && x.EPS > 0 && x.SharesCount >= 180000000 && GoodSecurityGroupsList.Contains(x.SecurityGroupID)).Select(x => new Security {SecurityGroupID = x.SecurityGroupID, SecurityDescription=x.SecurityDescription,MarketType=x.MarketType,SecurityGroupTitle=x.SecurityGroupTitle,SecurityName=x.SecurityName, SecurityID=x.SecurityID }).OrderBy(x => x.SecurityName).ToList();
 
                 for (int i = 0; i < Securities.Count; i++)
                 {
@@ -358,11 +357,11 @@ namespace SecurityBuyCandidates
                     double firstPrice = 0;
                     double lastPrice = 0;
 
-                    //if (Security.SecurityID== 2365)
+                    //if (Security.SecurityID == 2095)
                     {
-                        for (int j = 0; j < PriceList.Count - 26; j++)
+                        for (int j = 0; j < PriceList.Count - nudWMA.Value; j++)
                         {
-                            double wma = WMA(PriceList, 26, j);
+                            double wma = WMA(PriceList, (int)nudWMA.Value, j);
 
                             l = j;
 
@@ -409,8 +408,11 @@ namespace SecurityBuyCandidates
 
                     if (flag)
                     {
+                        Growth Growth = CurrentGrowth(PriceList);
+
                         //if ((k >= 20) && (l + 1 - k >= nudMinCorrection.Value)) //&& (l + 1 - k <= nudMaxCorrection.Value))
-                        if ((k >= 20) && (l + 1 - k >= 20 || l + 1 - k <= 10))
+                        //if ((k >= 20) && (l + 1 - k >= 20 || l + 1 - k <= 10))
+                        if ((k >= 20) && (l + 1 - k - Growth.Days >= 20))
                         {
                             //Security.Comment = string.Format("Growth for {0} days, Correction for {1} days, over {2} days.", k, l + 1 - k, l + 1);
                             GoodSecurities.Add(Security);

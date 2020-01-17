@@ -18,7 +18,6 @@ namespace SecurityBuyCandidates.Models
         {
             this.tblSecurity = new HashSet<tblSecurity>();
             this.tblSecurity1 = new HashSet<tblSecurity>();
-            this.tblSecurityHistoryAgah = new HashSet<tblSecurityHistoryAgah>();
             this.tblSecurityHistory = new HashSet<tblSecurityHistory>();
         }
     
@@ -29,7 +28,6 @@ namespace SecurityBuyCandidates.Models
         public virtual tblBaseInfo tblBaseInfo { get; set; }
         public virtual ICollection<tblSecurity> tblSecurity { get; set; }
         public virtual ICollection<tblSecurity> tblSecurity1 { get; set; }
-        public virtual ICollection<tblSecurityHistoryAgah> tblSecurityHistoryAgah { get; set; }
         public virtual ICollection<tblSecurityHistory> tblSecurityHistory { get; set; }
     }
 }
