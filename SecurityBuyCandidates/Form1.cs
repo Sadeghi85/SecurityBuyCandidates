@@ -21,43 +21,7 @@ namespace SecurityBuyCandidates
         }
 
         #region Utility Functions
-        private double EFI(List<vwSecurityHistory> PriceList, int Period = 13, int Offset = 0)
-        {
-            List<double> e = new List<double>();
-
-            int k = Period + Offset;
-
-            for (int i = 0 + Offset; i < k; i++)
-            {
-                if (PriceList[i].Volume > 0)
-                {
-                    e.Add((PriceList[i].ClosingPrice - PriceList[i + 1].ClosingPrice) * PriceList[i].Volume);
-                }
-                else
-                {
-                    if (k < MAX_DAYS)
-                    {
-                        k++;
-                    }
-                }
-            }
-
-            double p = 0;
-
-            if (e.Count == Period)
-            {
-                for (int i = 0; i < Period; i++)
-                {
-                    p += e[i] * (Period - i);
-
-                }
-
-                p = p / (Period * (Period + 1) / 2);
-
-            }
-
-            return p;
-        }
+        
         private double WMA(List<vwSecurityHistory> PriceList, int Period = 26, int Offset = 0)
         {
             double p = 0;
@@ -110,36 +74,66 @@ namespace SecurityBuyCandidates
 
             return p;
         }
-        private double SD(List<vwSecurityHistory> PriceList, int Period = 20, int Offset = 0)
+        
+        private double Sadeghi85(List<vwSecurityHistory> PriceList, int Period, int Offset = 0)
         {
-            double p = 0;
 
-            double sma = SMA(PriceList, Period, Offset);
+            double[] p = new double[Period + Offset];
 
+            int trend, nexttrend;
+            double hh, ll, maxl, minh, lma, hma;
 
+            nexttrend = 0;
+            trend = 0;
+            maxl = 0;
+            minh = 9999999;
 
-            int j = 0;
-            int k = Period + Offset;
-            for (int i = 0 + Offset; i < k; i++)
+            for (int bar = Period + Offset - 1; bar >= 0 + Offset; bar--)
             {
-                if (PriceList[i].Volume > 0)
+                hh = Math.Max(PriceList[bar].HighestPrice, PriceList[bar + 1].HighestPrice);
+                ll = Math.Min(PriceList[bar].LowestPrice, PriceList[bar + 1].LowestPrice);
+                lma = (double)(PriceList[bar].LowestPrice + PriceList[bar + 1].LowestPrice) / 2;
+                hma = (double)(PriceList[bar].HighestPrice + PriceList[bar + 1].HighestPrice) / 2;
+                
+                //---
+                if (nexttrend == 1)
                 {
-                    p += Math.Pow((PriceList[i].ClosingPrice - sma), 2);
-                    j++;
-                }
-                else
-                {
-                    if (k < MAX_DAYS)
+                    maxl = Math.Max(ll, maxl);
+
+                    if (hma < maxl && PriceList[bar].ClosingPrice < PriceList[bar + 1].LowestPrice)
                     {
-                        k++;
+                        trend = 1;
+                        nexttrend = 0;
+                        minh = hh;
                     }
                 }
+                //---
+                if (nexttrend == 0)
+                {
+                    minh = Math.Min(hh, minh);
+
+                    if (lma > minh && PriceList[bar].ClosingPrice > PriceList[bar + 1].HighestPrice)
+                    {
+                        trend = 0;
+                        nexttrend = 1;
+                        maxl = ll;
+                    }
+                }
+                //---
+                if (trend == 0)
+                {
+                    p[bar] = 0.80 * PriceList[bar].ClosingPrice;
+                }
+                if (trend == 1)
+                {
+                    p[bar] = 1.2 * PriceList[bar].ClosingPrice;
+                }
+                //---
+
             }
 
-            p = p / (Period - 1);
-            p = Math.Pow(p, 0.5);
 
-            return p;
+            return p[Offset];
         }
 
         private Growth CurrentGrowth(List<vwSecurityHistory> PriceList)
@@ -155,7 +149,8 @@ namespace SecurityBuyCandidates
             {
                 for (int j = 0; j < PriceList.Count - nudWMA.Value; j++)
                 {
-                    double wma = WMA(PriceList, (int)nudWMA.Value, j);
+                    //double wma = WMA(PriceList, (int)nudWMA.Value, j);
+                    double wma = Sadeghi85(PriceList, (int)nudWMA.Value, j);
 
                     l = j;
 
@@ -284,7 +279,7 @@ namespace SecurityBuyCandidates
 
                 Growth Growth = CurrentGrowth(PriceList);
 
-                if ((Growth.Percent / Growth.Days > 1.0) && ((Growth.Days >= nudMinGrowthDays.Value) && (Growth.Days <= nudMaxGrowthDays.Value)) && ((Growth.Percent >= (double)nudMinGrowthPercent.Value) && (Growth.Percent <= (double)nudMaxGrowthPercent.Value)))
+                if ((Growth.Percent / (double)Growth.Days > 1.0) && ((Growth.Days >= nudMinGrowthDays.Value) && (Growth.Days <= nudMaxGrowthDays.Value)) && ((Growth.Percent >= (double)nudMinGrowthPercent.Value) && (Growth.Percent <= (double)nudMaxGrowthPercent.Value)))
                 {
                     dataGridView1.Invoke(new Action(
                              () =>
@@ -357,11 +352,12 @@ namespace SecurityBuyCandidates
                     double firstPrice = 0;
                     double lastPrice = 0;
 
-                    //if (Security.SecurityID == 2095)
+                    //if (Security.SecurityID == 2182)
                     {
                         for (int j = 0; j < PriceList.Count - nudWMA.Value; j++)
                         {
-                            double wma = WMA(PriceList, (int)nudWMA.Value, j);
+                            //double wma = WMA(PriceList, (int)nudWMA.Value, j);
+                            double wma = Sadeghi85(PriceList, (int)nudWMA.Value, j);
 
                             l = j;
 
@@ -386,7 +382,8 @@ namespace SecurityBuyCandidates
                                 //}
                                 //else if ((((lastPrice - firstPrice) / firstPrice) * 100) > 10 && (k >= nudMinGrowth.Value))
                                 //else
-                                if ((k >= 20) && (l + 1 > k))
+                                if (((((lastPrice - firstPrice) / firstPrice) * 100) / (double)k > 1.0) && (k >= 20) && (l + 1 > k))
+                                //if ((k >= 20) && (l + 1 > k))
                                 {
                                     flag = true;
                                     break;
@@ -617,205 +614,8 @@ namespace SecurityBuyCandidates
 
         #endregion
 
-        #region Standard Deviation
-        private async void btnAnalyseSD_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                DB_BourseEntities ctx = new DB_BourseEntities();
+       
 
-                dataGridView3.Invoke(new Action(
-                             () =>
-                             {
-                                 dataGridView3.Rows.Clear();
-                             }
-                    ));
-
-                progressBar3.Value = 0;
-
-                //List<int> tmp = new List<int>() { 2236, 2148, 2271, 2420, 2520 };
-                //List<vwSecurity> Securities = ctx.vwSecurity.Where(x => tmp.Contains(x.SecurityID)).OrderBy(x => x.SecurityName).ToList();
-
-                List<Security> Securities = ctx.vwSecurity.Where(x => x.SecurityTypeID == 6).Select(x => new Security { SecurityDescription = x.SecurityDescription, MarketType = x.MarketType, SecurityGroupTitle = x.SecurityGroupTitle, SecurityName = x.SecurityName, SecurityID = x.SecurityID }).OrderBy(x => x.SecurityName).ToList();
-                
-
-                progressBar3.Value = 0;
-
-                for (int i = 0; i < Securities.Count; i++)
-                {
-                    Security Security = Securities[i];
-
-                    await Task.Run(() => AnalyseSingleSD(Security));
-
-
-                    progressBar3.Value = (int)(((i + 1) * 100) / Securities.Count);
-
-
-                }
-
-                Console.WriteLine(string.Format("Done.\n"));
-
-
-                //await Task.Run(() => progressBar1.Invoke(new Action(
-                //             () =>
-                //             {
-                //                 progressBar1.Value = 0;
-                //             }
-                //    )));
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-        }
-
-        private void AnalyseSingleSD(Security Security)
-        {
-            try
-            {
-                DB_BourseEntities ctx = new DB_BourseEntities();
-
-                DateTime Date = dtpDate3.Value.Date;
-
-                List<vwSecurityHistory> PriceList = ctx.vwSecurityHistory.Where(x => x.AdjustmentTypeID == 18 && x.SecurityID == Security.SecurityID && x.Date <= Date).OrderByDescending(x => x.Date).Take(MAX_DAYS).ToList();
-                
-                double days = (double)nudDays3.Value;
-                bool flag = true;
-
-                for (int i = 0; i < days; i++)
-                {
-                    double sd = SD(PriceList, 20, i);
-                    double percent = (sd / PriceList[i].ClosingPrice) * 100;
-                    
-                    if (!(percent <= (double)nudPercent3.Value))
-                    {
-                        flag = false;
-                    }
-                }
-                
-                if (flag)
-                {
-                    dataGridView3.Invoke(new Action(
-                             () =>
-                             {
-                                 var index = dataGridView3.Rows.Add();
-                                 dataGridView3.Rows[index].Cells["SecurityName3"].Value = Security.SecurityName;
-                                 dataGridView3.Rows[index].Cells["SecurityDescription3"].Value = Security.SecurityDescription;
-                                 dataGridView3.Rows[index].Cells["MarketType3"].Value = Security.MarketType;
-                                 dataGridView3.Rows[index].Cells["SecurityGroupTitle3"].Value = Security.SecurityGroupTitle;
-                                 dataGridView3.Rows[index].Cells["Comment3"].Value = string.Format("");
-                             }
-                    ));
-
-
-
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-        }
-
-
-        #endregion
-
-        #region GrowthPercent
-        private async void btnAnalyseGrowthPercent_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                DB_BourseEntities ctx = new DB_BourseEntities();
-
-                dataGridView4.Invoke(new Action(
-                             () =>
-                             {
-                                 dataGridView4.Rows.Clear();
-                             }
-                    ));
-
-                progressBar4.Value = 0;
-
-                //List<int> tmp = new List<int>() { 2236, 2148, 2271, 2420, 2520 };
-                //List<vwSecurity> Securities = ctx.vwSecurity.Where(x => tmp.Contains(x.SecurityID)).OrderBy(x => x.SecurityName).ToList();
-
-                //List<vwSecurity> Securities = ctx.vwSecurity.Where(x => x.SecurityTypeID == 6).OrderBy(x => x.SecurityName).ToList();
-                //List<Security> Securities = GoodSecurities();
-                List<Security> Securities = ctx.vwSecurity.Where(x => x.SecurityTypeID == 6).Select(x => new Security { SecurityDescription = x.SecurityDescription, MarketType = x.MarketType, SecurityGroupTitle = x.SecurityGroupTitle, SecurityName = x.SecurityName, SecurityID = x.SecurityID }).OrderBy(x => x.SecurityName).ToList();
-
-                progressBar4.Value = 0;
-
-                for (int i = 0; i < Securities.Count; i++)
-                {
-                    Security Security = Securities[i];
-
-                    await Task.Run(() => AnalyseSingleGrowthPercent(Security));
-
-                    progressBar4.Value = (int)(((i + 1) * 100) / Securities.Count);
-                }
-
-                Console.WriteLine(string.Format("Done.\n"));
-
-
-                //await Task.Run(() => progressBar1.Invoke(new Action(
-                //             () =>
-                //             {
-                //                 progressBar1.Value = 0;
-                //             }
-                //    )));
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-        }
-
-
-        private void AnalyseSingleGrowthPercent(Security Security)
-        {
-            try
-            {
-                DB_BourseEntities ctx = new DB_BourseEntities();
-
-                DateTime Date = dtpDate4.Value.Date;
-
-                List<vwSecurityHistory> PriceList = ctx.vwSecurityHistory.Where(x => x.AdjustmentTypeID == 18 && x.SecurityID == Security.SecurityID && x.Date <= Date).OrderByDescending(x => x.Date).Take(MAX_DAYS).ToList();
-
-                //double wma = WMA(PriceList);
-                //double percent = 0;
-                //double close = (double)PriceList[0].ClosingPrice;
-
-                //percent = (close - wma) / wma;
-
-                //if (percent >= -0.08 && percent <= 0.2 && EFI(PriceList) > 0)
-                Growth Growth = CurrentGrowth(PriceList);
-
-                if (Growth.Percent >= (double)nudMinGrowthPercent4.Value && Growth.Percent <= (double)nudMaxGrowthPercent4.Value)
-                {
-                    dataGridView4.Invoke(new Action(
-                             () =>
-                             {
-                                 var index = dataGridView4.Rows.Add();
-                                 dataGridView4.Rows[index].Cells["SecurityName4"].Value = Security.SecurityName;
-                                 dataGridView4.Rows[index].Cells["SecurityDescription4"].Value = Security.SecurityDescription;
-                                 dataGridView4.Rows[index].Cells["MarketType4"].Value = Security.MarketType;
-                                 dataGridView4.Rows[index].Cells["SecurityGroupTitle4"].Value = Security.SecurityGroupTitle;
-                                 dataGridView4.Rows[index].Cells["Comment4"].Value = Security.Comment;
-                             }
-                    ));
-
-
-
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-        }
-
-        #endregion
+        
     }
 }
