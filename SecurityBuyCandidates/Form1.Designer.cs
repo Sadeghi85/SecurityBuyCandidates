@@ -30,8 +30,6 @@
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.nudWMA = new System.Windows.Forms.NumericUpDown();
-            this.label3 = new System.Windows.Forms.Label();
             this.nudMaxGrowthDays = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
             this.nudMaxGrowthPercent = new System.Windows.Forms.NumericUpDown();
@@ -60,16 +58,16 @@
             this.label6 = new System.Windows.Forms.Label();
             this.dtpStartDate2 = new System.Windows.Forms.DateTimePicker();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
+            this.btnAnalyse2 = new System.Windows.Forms.Button();
+            this.nudMinGrowth2 = new System.Windows.Forms.NumericUpDown();
+            this.label4 = new System.Windows.Forms.Label();
             this.Index2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.SecurityGroupID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.SecurityGroupTitle2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.AverageCycle = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.btnAnalyse2 = new System.Windows.Forms.Button();
-            this.nudMinGrowth2 = new System.Windows.Forms.NumericUpDown();
-            this.label4 = new System.Windows.Forms.Label();
+            this.AverageProfit = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudWMA)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMaxGrowthDays)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMaxGrowthPercent)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMinGrowthPercent)).BeginInit();
@@ -98,8 +96,6 @@
             // tabPage1
             // 
             this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPage1.Controls.Add(this.nudWMA);
-            this.tabPage1.Controls.Add(this.label3);
             this.tabPage1.Controls.Add(this.nudMaxGrowthDays);
             this.tabPage1.Controls.Add(this.label2);
             this.tabPage1.Controls.Add(this.nudMaxGrowthPercent);
@@ -119,33 +115,6 @@
             this.tabPage1.Size = new System.Drawing.Size(1280, 429);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "نماد های مناسب خرید";
-            // 
-            // nudWMA
-            // 
-            this.nudWMA.Location = new System.Drawing.Point(771, 20);
-            this.nudWMA.Maximum = new decimal(new int[] {
-            200,
-            0,
-            0,
-            0});
-            this.nudWMA.Name = "nudWMA";
-            this.nudWMA.Size = new System.Drawing.Size(47, 20);
-            this.nudWMA.TabIndex = 27;
-            this.nudWMA.Value = new decimal(new int[] {
-            26,
-            0,
-            0,
-            0});
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(728, 22);
-            this.label3.Name = "label3";
-            this.label3.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label3.Size = new System.Drawing.Size(37, 13);
-            this.label3.TabIndex = 26;
-            this.label3.Text = "WMA:";
             // 
             // nudMaxGrowthDays
             // 
@@ -444,43 +413,12 @@
             this.Index2,
             this.SecurityGroupID,
             this.SecurityGroupTitle2,
-            this.AverageCycle});
+            this.AverageCycle,
+            this.AverageProfit});
             this.dataGridView2.Location = new System.Drawing.Point(6, 47);
             this.dataGridView2.Name = "dataGridView2";
             this.dataGridView2.Size = new System.Drawing.Size(1268, 347);
             this.dataGridView2.TabIndex = 5;
-            // 
-            // Index2
-            // 
-            this.Index2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.Index2.HeaderText = "Index";
-            this.Index2.Name = "Index2";
-            this.Index2.ReadOnly = true;
-            this.Index2.Width = 58;
-            // 
-            // SecurityGroupID
-            // 
-            this.SecurityGroupID.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.SecurityGroupID.HeaderText = "SecurityGroupID";
-            this.SecurityGroupID.Name = "SecurityGroupID";
-            this.SecurityGroupID.ReadOnly = true;
-            this.SecurityGroupID.Width = 110;
-            // 
-            // SecurityGroupTitle2
-            // 
-            this.SecurityGroupTitle2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.SecurityGroupTitle2.HeaderText = "SecurityGroupTitle";
-            this.SecurityGroupTitle2.Name = "SecurityGroupTitle2";
-            this.SecurityGroupTitle2.ReadOnly = true;
-            this.SecurityGroupTitle2.Width = 119;
-            // 
-            // AverageCycle
-            // 
-            this.AverageCycle.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.AverageCycle.HeaderText = "AverageCycle";
-            this.AverageCycle.Name = "AverageCycle";
-            this.AverageCycle.ReadOnly = true;
-            this.AverageCycle.Width = 98;
             // 
             // btnAnalyse2
             // 
@@ -514,6 +452,44 @@
             this.label4.TabIndex = 0;
             this.label4.Text = "Minimum Growth time:";
             // 
+            // Index2
+            // 
+            this.Index2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.Index2.HeaderText = "Index";
+            this.Index2.Name = "Index2";
+            this.Index2.ReadOnly = true;
+            this.Index2.Width = 58;
+            // 
+            // SecurityGroupID
+            // 
+            this.SecurityGroupID.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.SecurityGroupID.HeaderText = "SecurityGroupID";
+            this.SecurityGroupID.Name = "SecurityGroupID";
+            this.SecurityGroupID.ReadOnly = true;
+            this.SecurityGroupID.Width = 110;
+            // 
+            // SecurityGroupTitle2
+            // 
+            this.SecurityGroupTitle2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.SecurityGroupTitle2.HeaderText = "SecurityGroupTitle";
+            this.SecurityGroupTitle2.Name = "SecurityGroupTitle2";
+            this.SecurityGroupTitle2.ReadOnly = true;
+            this.SecurityGroupTitle2.Width = 119;
+            // 
+            // AverageCycle
+            // 
+            this.AverageCycle.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.AverageCycle.HeaderText = "AverageCycle";
+            this.AverageCycle.Name = "AverageCycle";
+            this.AverageCycle.ReadOnly = true;
+            this.AverageCycle.Width = 98;
+            // 
+            // AverageProfit
+            // 
+            this.AverageProfit.HeaderText = "AverageProfit";
+            this.AverageProfit.Name = "AverageProfit";
+            this.AverageProfit.ReadOnly = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -525,7 +501,6 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudWMA)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMaxGrowthDays)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMaxGrowthPercent)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMinGrowthPercent)).EndInit();
@@ -558,10 +533,6 @@
         private System.Windows.Forms.DateTimePicker dtpStartDate2;
         private System.Windows.Forms.DataGridView dataGridView2;
         private System.Windows.Forms.ProgressBar progressBar2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Index2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn SecurityGroupID;
-        private System.Windows.Forms.DataGridViewTextBoxColumn SecurityGroupTitle2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn AverageCycle;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.DateTimePicker dtpDate;
         private System.Windows.Forms.NumericUpDown nudMaxGrowthPercent;
@@ -578,8 +549,11 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Comment;
         private System.Windows.Forms.NumericUpDown nudMaxGrowthDays;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.NumericUpDown nudWMA;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Index2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn SecurityGroupID;
+        private System.Windows.Forms.DataGridViewTextBoxColumn SecurityGroupTitle2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn AverageCycle;
+        private System.Windows.Forms.DataGridViewTextBoxColumn AverageProfit;
     }
 }
 

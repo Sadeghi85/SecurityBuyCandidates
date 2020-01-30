@@ -45,7 +45,7 @@ namespace SecurityBuyCandidates
                 }
             }
 
-            p = p / (Period * (Period + 1) / 2);
+            p = p / ((double)(Period * (Period + 1)) / (double)2);
 
             return p;
         }
@@ -71,7 +71,7 @@ namespace SecurityBuyCandidates
                 }
             }
 
-            p = p / Period ;
+            p = p / (double)Period ;
 
             return p;
         }
@@ -93,8 +93,8 @@ namespace SecurityBuyCandidates
             {
                 hh = Math.Max(PriceList[bar].HighestPrice, PriceList[bar + 1].HighestPrice);
                 ll = Math.Min(PriceList[bar].LowestPrice, PriceList[bar + 1].LowestPrice);
-                lma = (double)(PriceList[bar].LowestPrice + PriceList[bar + 1].LowestPrice) / 2;
-                hma = (double)(PriceList[bar].HighestPrice + PriceList[bar + 1].HighestPrice) / 2;
+                lma = (double)(PriceList[bar].LowestPrice + PriceList[bar + 1].LowestPrice) / (double)2;
+                hma = (double)(PriceList[bar].HighestPrice + PriceList[bar + 1].HighestPrice) / (double)2;
                 
                 //---
                 if (nexttrend == 1)
@@ -148,7 +148,7 @@ namespace SecurityBuyCandidates
 
             //if (Security.SecurityID== 2440)
             {
-                for (int j = 0; j < PriceList.Count - nudWMA.Value; j++)
+                for (int j = 0; j < PriceList.Count - Ozymandias_Period; j++)
                 {
                     //double wma = WMA(PriceList, (int)nudWMA.Value, j);
                     double ozymandias = Ozymandias(PriceList, j);
@@ -172,7 +172,7 @@ namespace SecurityBuyCandidates
                     }
                 }
 
-                p = ((lastPrice - firstPrice) / firstPrice) * 100;
+                p = ((double)(lastPrice - firstPrice) / firstPrice) * 100;
             }
 
             return new Growth {Days = k, Percent = p };
@@ -291,7 +291,7 @@ namespace SecurityBuyCandidates
                                 dataGridView1.Rows[index].Cells["MarketType"].Value = Security.MarketType;
                                 dataGridView1.Rows[index].Cells["SecurityGroupTitle"].Value = Security.SecurityGroupTitle;
                                 dataGridView1.Rows[index].Cells["Comment"].Value = Security.Comment + string.Format(" Current Growth Percent: {0}, Current Growth Days: {1}.", Math.Round(Growth.Percent, 2), Growth.Days);
-                                dataGridView1.Rows[index].Cells["AvgGrowthPercent"].Value = Math.Round(Growth.Percent / Growth.Days, 2);
+                                dataGridView1.Rows[index].Cells["AvgGrowthPercent"].Value = Math.Round(Growth.Percent / (double)Growth.Days, 2);
                                 dataGridView1.Rows[index].Cells["OneMonthProfit"].Value = OneMonthProfit;
 
                                 dataGridView1.Rows[index].Cells["BuyerStrength"].Value = BuyerStrength;
@@ -312,7 +312,10 @@ namespace SecurityBuyCandidates
         {
             DB_BourseEntities ctx = new DB_BourseEntities();
 
-            List<int> GoodSecurityGroupIDs = new List<int> { 45,44,40,42,34,27,24,26,8,11,17,35,15,30,38,18,3,23,1,33,47,43,31,  16,22,28,2,5 };
+            //List<int> GoodSecurityGroupIDs = new List<int> { 45,44,40,42,34,27,24,26,8,11,17,35,15,30,38,18,3,23,1,33,47,43,31,  16,22,28,2,5 };
+            List<int> GoodSecurityGroupIDs = new List<int> { 37, 32, 39, 44, 40, 25, 22, 14, 35, 20, 47, 43, 18, 27, 23, 28, 38, 26, 7, 15, 42, 24, 16, 30, 11, 45, 31, 17, 33, 4, 1, 34, 2, 5, 21, 10, 41 };
+            
+
 
             //List<SecurityGroup> GoodSecurityGroups = ctx.tblSecurityGroup.Where(x => GoodSecurityGroupIDs.Contains(x.SecurityGroupID)).Select(x => new SecurityGroup { SecurityGroupID = x.SecurityGroupID, SecurityGroupTitle = x.SecurityGroupTitle }).ToList();
 
@@ -383,7 +386,7 @@ namespace SecurityBuyCandidates
                                 //}
                                 //else if ((((lastPrice - firstPrice) / firstPrice) * 100) > 10 && (k >= nudMinGrowth.Value))
                                 //else
-                                if (((((lastPrice - firstPrice) / firstPrice) * 100) / (double)k > 1.0) && (k >= 20) && (l + 1 > k))
+                                if (((((double)(lastPrice - firstPrice) / firstPrice) * 100) / (double)k > 1.0) && (k >= 20) && (l + 1 > k))
                                 //if ((k >= 20) && (l + 1 > k))
                                 {
                                     flag = true;
@@ -455,7 +458,7 @@ namespace SecurityBuyCandidates
 
 
 
-                List<Security> Securities = ctx.vwSecurity.Where(x => x.SecurityTypeID == 6).OrderBy(x => x.SecurityName).Select(x => new Security() {SecurityID=x.SecurityID,SecurityGroupTitle=x.SecurityGroupTitle,SecurityGroupID=x.SecurityGroupID, cycle=0 }).ToList();
+                List<Security> Securities = ctx.vwSecurity.Where(x => x.SecurityTypeID == 6).OrderBy(x => x.SecurityName).Select(x => new Security() {SecurityDescription=x.SecurityDescription,SecurityName=x.SecurityName,SecurityID=x.SecurityID,SecurityGroupTitle=x.SecurityGroupTitle,SecurityGroupID=x.SecurityGroupID, cycle=0, averageProfit=0 }).ToList();
 
                 progressBar2.Value = 0;
 
@@ -463,8 +466,9 @@ namespace SecurityBuyCandidates
                 {
                     Security Security = Securities[i];
 
-                    int cycle = await Task.Run(() => AnalyseSingle2(Security));
-                    Securities[i].cycle = cycle;
+                    Performance performance = await Task.Run(() => AnalyseSingle2(Security));
+                    Securities[i].cycle = performance.cycle;
+                    Securities[i].averageProfit = performance.averageProfit;
 
                     progressBar2.Value = (int)(((i + 1) * 100) / Securities.Count);
 
@@ -472,7 +476,7 @@ namespace SecurityBuyCandidates
                 }
 
 
-                List<SecurityGroup> SecurityGroups = Securities.GroupBy(x => new { x.SecurityGroupID, x.SecurityGroupTitle }).Select(x => new SecurityGroup() { SecurityGroupID = x.Key.SecurityGroupID,SecurityGroupTitle=x.Key.SecurityGroupTitle, AverageCycle = x.Average(z => z.cycle) }).OrderByDescending(x => x.AverageCycle).ToList();
+                List<SecurityGroup> SecurityGroups = Securities.GroupBy(x => new { x.SecurityGroupID, x.SecurityGroupTitle }).Select(x => new SecurityGroup() { SecurityGroupID = x.Key.SecurityGroupID,SecurityGroupTitle=x.Key.SecurityGroupTitle, AverageCycle = x.Average(z => z.cycle), AverageProfit = x.Average(z => z.averageProfit) }).OrderBy(x => x.SecurityGroupTitle).ToList();
 
                 for (int i = 0; i < SecurityGroups.Count; i++)
                 //foreach (SecurityGroup SecurityGroup in SecurityGroups)
@@ -486,18 +490,19 @@ namespace SecurityBuyCandidates
                                  dataGridView2.Rows[index].Cells["SecurityGroupID"].Value = SecurityGroups[i].SecurityGroupID;
                                  dataGridView2.Rows[index].Cells["SecurityGroupTitle2"].Value = SecurityGroups[i].SecurityGroupTitle;
                                  dataGridView2.Rows[index].Cells["AverageCycle"].Value = Math.Round(SecurityGroups[i].AverageCycle, 2);
+                                 dataGridView2.Rows[index].Cells["AverageProfit"].Value = Math.Round(SecurityGroups[i].AverageProfit, 2);
                              }
                     ));
                 }
 
 
-                dataGridView2.Invoke(new Action(
-                             () =>
-                             {
+                //dataGridView2.Invoke(new Action(
+                //             () =>
+                //             {
 
-                                 dataGridView2.Sort(dataGridView2.Columns["AverageCycle"], ListSortDirection.Descending);
-                             }
-                    ));
+                //                 dataGridView2.Sort(dataGridView2.Columns["AverageCycle"], ListSortDirection.Descending);
+                //             }
+                //    ));
 
 
                 Console.WriteLine(string.Format("Done.\n"));
@@ -517,9 +522,11 @@ namespace SecurityBuyCandidates
             }
         }
 
-        private async Task<int> AnalyseSingle2(Security Security)
+        private async Task<Performance> AnalyseSingle2(Security Security)
         {
+            Performance performance = new Performance();
             int cycle = 0;
+            double sumProfit = 0;
 
             try
             {
@@ -559,10 +566,12 @@ namespace SecurityBuyCandidates
 
                         if ((((double)(lastPrice - firstPrice) / firstPrice) * 100) / (double)k > 1.0 && (k > 10) && (k == l + 1))
                         {
+                            sumProfit += (((double)(lastPrice - firstPrice) / firstPrice) * 100) / (double)k;
                             cycle++;
                         }
                         else if ((((double)(lastPrice - firstPrice) / firstPrice) * 100) / (double)k > 1.0 && (k >= nudMinGrowth2.Value))
                         {
+                            sumProfit += (((double)(lastPrice - firstPrice) / firstPrice) * 100) / (double)k;
                             cycle++;
                         }
                        
@@ -576,6 +585,7 @@ namespace SecurityBuyCandidates
                     firstPrice = (double)PriceList[PriceList.Count - 1].ClosingPrice;
                     if ((((double)(lastPrice - firstPrice) / firstPrice) * 100) / (double)k > 1.0 && (k >= nudMinGrowth2.Value))
                     {
+                        sumProfit += (((double)(lastPrice - firstPrice) / firstPrice) * 100) / (double)k;
                         cycle++;
                     }
                 }
@@ -589,7 +599,13 @@ namespace SecurityBuyCandidates
                 Console.WriteLine(ex);
             }
 
-            return cycle;
+            performance.cycle = cycle;
+            if (cycle > 0)
+                performance.averageProfit = sumProfit / (double)cycle;
+            else
+                performance.averageProfit = 0;
+
+            return performance;
         }
 
         public class SecurityGroup
@@ -597,6 +613,7 @@ namespace SecurityBuyCandidates
             public int SecurityGroupID { get; set; }
             public string SecurityGroupTitle { get; set; }
             public double AverageCycle { get; set; }
+            public double AverageProfit { get; set; }
         }
 
         public class Security
@@ -606,11 +623,20 @@ namespace SecurityBuyCandidates
             public string SecurityGroupTitle { get; set; }
             public int cycle { get; set; }
 
+            public double averageProfit { get; set; }
+
             public string SecurityName { get; set; }
             public string SecurityDescription { get; set; }
             public string MarketType { get; set; }
             public string Comment { get; set; }
 
+        }
+
+        public class Performance
+        {
+            public int cycle { get; set; }
+
+            public double averageProfit { get; set; }
         }
 
         #endregion
