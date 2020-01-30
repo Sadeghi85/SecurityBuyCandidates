@@ -15,6 +15,7 @@ namespace SecurityBuyCandidates
     public partial class Form1 : Form
     {
         const int MAX_DAYS = 365;
+        const int Ozymandias_Period = 60;
         public Form1()
         {
             InitializeComponent();
@@ -75,10 +76,10 @@ namespace SecurityBuyCandidates
             return p;
         }
         
-        private double Sadeghi85(List<vwSecurityHistory> PriceList, int Period, int Offset = 0)
+        private double Ozymandias(List<vwSecurityHistory> PriceList, int Offset = 0)
         {
 
-            double[] p = new double[Period + Offset];
+            double[] p = new double[Ozymandias_Period + Offset];
 
             int trend, nexttrend;
             double hh, ll, maxl, minh, lma, hma;
@@ -88,7 +89,7 @@ namespace SecurityBuyCandidates
             maxl = 0;
             minh = 9999999;
 
-            for (int bar = Period + Offset - 1; bar >= 0 + Offset; bar--)
+            for (int bar = Ozymandias_Period + Offset - 1; bar >= 0 + Offset; bar--)
             {
                 hh = Math.Max(PriceList[bar].HighestPrice, PriceList[bar + 1].HighestPrice);
                 ll = Math.Min(PriceList[bar].LowestPrice, PriceList[bar + 1].LowestPrice);
@@ -150,11 +151,11 @@ namespace SecurityBuyCandidates
                 for (int j = 0; j < PriceList.Count - nudWMA.Value; j++)
                 {
                     //double wma = WMA(PriceList, (int)nudWMA.Value, j);
-                    double wma = Sadeghi85(PriceList, (int)nudWMA.Value, j);
+                    double ozymandias = Ozymandias(PriceList, j);
 
                     l = j;
 
-                    if (wma <= PriceList[j].ClosingPrice)
+                    if (ozymandias <= PriceList[j].ClosingPrice)
                     {
                         if (k == 1)
                         {
@@ -354,14 +355,14 @@ namespace SecurityBuyCandidates
 
                     //if (Security.SecurityID == 2182)
                     {
-                        for (int j = 0; j < PriceList.Count - nudWMA.Value; j++)
+                        for (int j = 0; j < PriceList.Count - Ozymandias_Period; j++)
                         {
                             //double wma = WMA(PriceList, (int)nudWMA.Value, j);
-                            double wma = Sadeghi85(PriceList, (int)nudWMA.Value, j);
+                            double ozymandias = Ozymandias(PriceList, j);
 
                             l = j;
 
-                            if (wma <= PriceList[j].ClosingPrice)
+                            if (ozymandias <= PriceList[j].ClosingPrice)
                             {
                                 if (k == 1)
                                 {
@@ -537,13 +538,13 @@ namespace SecurityBuyCandidates
                 double lastPrice = 0;
 
 
-                for (int j = 0; j < PriceList.Count - 26; j++)
+                for (int j = 0; j < PriceList.Count - Ozymandias_Period; j++)
                 {
-                    double wma = WMA(PriceList, 26, j);
+                    double ozymandias = Ozymandias(PriceList, j);
 
                     l = j;
 
-                    if (wma <= PriceList[j].ClosingPrice)
+                    if (ozymandias <= PriceList[j].ClosingPrice)
                     {
                         if (k == 1)
                         {
@@ -556,11 +557,11 @@ namespace SecurityBuyCandidates
                     {
                         firstPrice = (double)PriceList[j].ClosingPrice;
 
-                        if ((((lastPrice - firstPrice) / firstPrice) * 100) > 10 && (k > 10) && (k == l + 1))
+                        if ((((double)(lastPrice - firstPrice) / firstPrice) * 100) / (double)k > 1.0 && (k > 10) && (k == l + 1))
                         {
                             cycle++;
                         }
-                        else if ((((lastPrice - firstPrice) / firstPrice) * 100) > 10 && (k >= nudMinGrowth2.Value))
+                        else if ((((double)(lastPrice - firstPrice) / firstPrice) * 100) / (double)k > 1.0 && (k >= nudMinGrowth2.Value))
                         {
                             cycle++;
                         }
@@ -573,7 +574,7 @@ namespace SecurityBuyCandidates
 
                 {
                     firstPrice = (double)PriceList[PriceList.Count - 1].ClosingPrice;
-                    if ((((lastPrice - firstPrice) / firstPrice) * 100) > 10 && (k >= nudMinGrowth2.Value))
+                    if ((((double)(lastPrice - firstPrice) / firstPrice) * 100) / (double)k > 1.0 && (k >= nudMinGrowth2.Value))
                     {
                         cycle++;
                     }
