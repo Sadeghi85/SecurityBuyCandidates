@@ -250,35 +250,46 @@ namespace SecurityBuyCandidates
             {
                 DB_BourseEntities ctx = new DB_BourseEntities();
 
+                int BuyerStrengthDays = 0;
+                bool HasVolumeStrength = false;
+
                 DateTime Date = dtpDate.Value.Date;
 
                 List<vwSecurityHistory> PriceList = ctx.vwSecurityHistory.Where(x => x.AdjustmentTypeID == 18 && x.SecurityID == Security.SecurityID && x.Date <= Date).OrderByDescending(x => x.Date).Take(MAX_DAYS).ToList();
 
-                DateTime firstDate = Date.AddDays(1);
-                DateTime lastDate = Date.AddDays(31);
-                int firstPrice = ctx.vwSecurityHistory.Where(x => x.AdjustmentTypeID == 18 && x.SecurityID == Security.SecurityID && x.Date <= firstDate).OrderByDescending(x => x.Date).Take(1).First().ClosingPrice;
-                int lastPrice = ctx.vwSecurityHistory.Where(x => x.AdjustmentTypeID == 18 && x.SecurityID == Security.SecurityID && x.Date <= lastDate).OrderByDescending(x => x.Date).Take(1).First().ClosingPrice;
-                double OneMonthProfit = Math.Round(((double)(lastPrice - firstPrice) / firstPrice) * 100, 2);
-
-                //double wma = WMA(PriceList);
-                //double percent = 0;
-                //double close = (double)PriceList[0].ClosingPrice;
-
-                //percent = (close - wma) / wma;
-
-                //if (percent >= -0.08 && percent <= 0.2 && EFI(PriceList) > 0)
-
-                double BuyerStrength = 0;
-                try
-                {
-                    BuyerStrength = Math.Round(((double)PriceList[0].NaturalBuyVolume / (double)PriceList[0].NaturalBuyCount) / ((double)PriceList[0].NaturalSellVolume / (double)PriceList[0].NaturalSellCount), 2);
-                }
-                catch (Exception ex)
-                {
-
-                }
-
                 Growth Growth = CurrentGrowth(PriceList);
+
+                for (int i = 0; i < Growth.Days; i++)
+                {
+                    double BuyerStrength = 0;
+                    try
+                    {
+                        BuyerStrength = Math.Round(((double)PriceList[i].NaturalBuyVolume / (double)PriceList[i].NaturalBuyCount) / ((double)PriceList[i].NaturalSellVolume / (double)PriceList[i].NaturalSellCount), 2);
+                    }
+                    catch (Exception ex) { }
+
+                    if (BuyerStrength > 1.0)
+                    {
+                        BuyerStrengthDays++;
+                    }
+
+                    //////////////////////////////////////////
+
+                    double VolumeStrength = 0;
+                    long SumVolume = 0;
+
+                    for (int j = 1 + i; j < 11 + i; j++)
+                    {
+                        SumVolume += PriceList[j].Volume;
+                    }
+
+                    if (((double)PriceList[i].Volume / ((double)SumVolume / (double)10)) > 2.0)
+                    {
+                        HasVolumeStrength = true;
+                    }
+                }
+                
+                
 
                 if ((Growth.Percent / (double)Growth.Days > 1.0) && ((Growth.Days >= nudMinGrowthDays.Value) && (Growth.Days <= nudMaxGrowthDays.Value)) && ((Growth.Percent >= (double)nudMinGrowthPercent.Value) && (Growth.Percent <= (double)nudMaxGrowthPercent.Value)))
                 {
@@ -290,11 +301,15 @@ namespace SecurityBuyCandidates
                                 dataGridView1.Rows[index].Cells["SecurityDescription"].Value = Security.SecurityDescription;
                                 dataGridView1.Rows[index].Cells["MarketType"].Value = Security.MarketType;
                                 dataGridView1.Rows[index].Cells["SecurityGroupTitle"].Value = Security.SecurityGroupTitle;
-                                dataGridView1.Rows[index].Cells["Comment"].Value = Security.Comment + string.Format(" Current Growth Percent: {0}, Current Growth Days: {1}.", Math.Round(Growth.Percent, 2), Growth.Days);
-                                dataGridView1.Rows[index].Cells["AvgGrowthPercent"].Value = Math.Round(Growth.Percent / (double)Growth.Days, 2);
-                                dataGridView1.Rows[index].Cells["OneMonthProfit"].Value = OneMonthProfit;
+                                //dataGridView1.Rows[index].Cells["Comment"].Value = Security.Comment + string.Format(" Current Growth Percent: {0}, Current Growth Days: {1}.", Math.Round(Growth.Percent, 2), Growth.Days);
 
-                                dataGridView1.Rows[index].Cells["BuyerStrength"].Value = BuyerStrength;
+                                dataGridView1.Rows[index].Cells["GrowthDays"].Value = Growth.Days;
+                                dataGridView1.Rows[index].Cells["GrowthPercent"].Value = Math.Round(Growth.Percent, 2);
+                                dataGridView1.Rows[index].Cells["AvgGrowthPercent"].Value = Math.Round(Growth.Percent / (double)Growth.Days, 2);
+                                
+
+                                dataGridView1.Rows[index].Cells["BuyerStrength"].Value = Math.Round((double)BuyerStrengthDays / (double)Growth.Days, 2);
+                                dataGridView1.Rows[index].Cells["VolumeStrength"].Value = HasVolumeStrength ? "Yes" : "No";
                             }
                     ));
 
@@ -356,7 +371,7 @@ namespace SecurityBuyCandidates
                     double firstPrice = 0;
                     double lastPrice = 0;
 
-                    //if (Security.SecurityID == 2182)
+                    //if (Security.SecurityID == 2521)
                     {
                         for (int j = 0; j < PriceList.Count - Ozymandias_Period; j++)
                         {
