@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -14,8 +15,8 @@ namespace SecurityBuyCandidates
 {
     public partial class Form1 : Form
     {
-        const int MAX_DAYS = 365;
-        const int Ozymandias_Period = 60;
+        const int MAX_DAYS = 400;
+        const int Ozymandias_Period = 30;
         public Form1()
         {
             InitializeComponent();
@@ -162,6 +163,8 @@ namespace SecurityBuyCandidates
                             lastPrice = (double)PriceList[j].ClosingPrice;
                         }
 
+                        firstPrice = (double)PriceList[j].ClosingPrice;
+
                         k++;
                     }
                     else
@@ -205,7 +208,19 @@ namespace SecurityBuyCandidates
                 //List<vwSecurity> Securities = ctx.vwSecurity.Where(x => tmp.Contains(x.SecurityID)).OrderBy(x => x.SecurityName).ToList();
 
                 //List<vwSecurity> Securities = ctx.vwSecurity.Where(x => x.SecurityTypeID == 6).OrderBy(x => x.SecurityName).ToList();
-                List<Security> Securities = GoodSecurities();
+
+
+                List<Security> Securities;
+
+                if (chbAll.Checked)
+                {
+                    Securities = GoodSecuritiesAll();
+                }
+                else
+                {
+                    Securities = GoodSecurities();
+                }
+                 
 
                 progressBar1.Value = 0;
 
@@ -221,7 +236,7 @@ namespace SecurityBuyCandidates
                 dataGridView1.Invoke(new Action(
                              () =>
                              {
-                                 dataGridView1.Sort(dataGridView1.Columns["AvgGrowthPercent"], ListSortDirection.Descending);
+                                 dataGridView1.Sort(dataGridView1.Columns["BuyerStrength"], ListSortDirection.Descending);
 
                              }
                     ));
@@ -250,14 +265,27 @@ namespace SecurityBuyCandidates
             {
                 DB_BourseEntities ctx = new DB_BourseEntities();
 
-                int BuyerStrengthDays = 0;
-                bool HasVolumeStrength = false;
+                double BuyerStrengthIndex = 0;
+                double VolumeStrengthIndex = 0;
+                double AvgGrowthPercent = 0;
+
+                //long VolumeBuy = 0;
+                //long VolumeSell = 0;
 
                 DateTime Date = dtpDate.Value.Date;
 
                 List<vwSecurityHistory> PriceList = ctx.vwSecurityHistory.Where(x => x.AdjustmentTypeID == 18 && x.SecurityID == Security.SecurityID && x.Date <= Date).OrderByDescending(x => x.Date).Take(MAX_DAYS).ToList();
 
-                Growth Growth = CurrentGrowth(PriceList);
+                if (PriceList.Count <= Ozymandias_Period)
+                {
+                    return;
+                }
+
+                Growth Growth = new Growth();
+                //if (Security.SecurityID == 2244)
+                    Growth = CurrentGrowth(PriceList);
+
+                AvgGrowthPercent = Math.Round(Growth.Percent / (double)Growth.Days, 2);
 
                 for (int i = 0; i < Growth.Days; i++)
                 {
@@ -266,32 +294,59 @@ namespace SecurityBuyCandidates
                     {
                         BuyerStrength = Math.Round(((double)PriceList[i].NaturalBuyVolume / (double)PriceList[i].NaturalBuyCount) / ((double)PriceList[i].NaturalSellVolume / (double)PriceList[i].NaturalSellCount), 2);
                     }
-                    catch (Exception ex) { }
-
-                    if (BuyerStrength > 1.0)
+                    catch (Exception ex)
                     {
-                        BuyerStrengthDays++;
+                        //Console.WriteLine(ex);
+                        Debug.WriteLine("Natural/Legal info is null: " + Security.SecurityName + " " + PriceList[i].Date);
+                    }
+
+                    if (BuyerStrength >= 1.0)
+                    {
+                        BuyerStrengthIndex += (Growth.Days - i);
                     }
 
                     //////////////////////////////////////////
 
-                    double VolumeStrength = 0;
+                    //VolumeBuy += PriceList[i].NaturalBuyVolume ?? 0;
+                    //VolumeSell += PriceList[i].NaturalSellVolume ?? 0;
+
+                    /////////////////////////////////////////
+
                     long SumVolume = 0;
 
-                    for (int j = 1 + i; j < 11 + i; j++)
+                    for (int j = 1 + i; j < 6 + i; j++)
                     {
                         SumVolume += PriceList[j].Volume;
                     }
 
-                    if (((double)PriceList[i].Volume / ((double)SumVolume / (double)10)) > 2.0)
+                    if (((double)PriceList[i].Volume / ((double)SumVolume / (double)5)) >= 2.0)
                     {
-                        HasVolumeStrength = true;
+                        VolumeStrengthIndex++;
                     }
-                }
-                
-                
 
-                if ((Growth.Percent / (double)Growth.Days > 1.0) && ((Growth.Days >= nudMinGrowthDays.Value) && (Growth.Days <= nudMaxGrowthDays.Value)) && ((Growth.Percent >= (double)nudMinGrowthPercent.Value) && (Growth.Percent <= (double)nudMaxGrowthPercent.Value)))
+
+                }
+
+                BuyerStrengthIndex = Math.Round(BuyerStrengthIndex / ((double)(Growth.Days * (Growth.Days + 1)) / (double)2), 2);
+                //VolumeStrengthIndex = VolumeStrengthIndex / (double)Growth.Days;
+                VolumeStrengthIndex = Math.Round(VolumeStrengthIndex, 2);
+
+                //try
+                //{
+                //    if ((double)VolumeBuy / (double)VolumeSell > 1.0)
+                //    {
+                //        HasVolumeStrength = true;
+                //    }
+                //    else
+                //    {
+                //        HasVolumeStrength = false;
+                //    }
+                //}
+                //catch (Exception ex) { Console.WriteLine(ex); }
+
+
+
+                if ((Growth.Percent / (double)Growth.Days >= 0.75) && ((Growth.Days >= nudMinGrowthDays.Value) && (Growth.Days <= nudMaxGrowthDays.Value)) && (AvgGrowthPercent <= (double)nudMaxAvgGrowthPercent.Value))
                 {
                     dataGridView1.Invoke(new Action(
                              () =>
@@ -305,11 +360,11 @@ namespace SecurityBuyCandidates
 
                                 dataGridView1.Rows[index].Cells["GrowthDays"].Value = Growth.Days;
                                 dataGridView1.Rows[index].Cells["GrowthPercent"].Value = Math.Round(Growth.Percent, 2);
-                                dataGridView1.Rows[index].Cells["AvgGrowthPercent"].Value = Math.Round(Growth.Percent / (double)Growth.Days, 2);
+                                dataGridView1.Rows[index].Cells["AvgGrowthPercent"].Value = AvgGrowthPercent;
                                 
 
-                                dataGridView1.Rows[index].Cells["BuyerStrength"].Value = Math.Round((double)BuyerStrengthDays / (double)Growth.Days, 2);
-                                dataGridView1.Rows[index].Cells["VolumeStrength"].Value = HasVolumeStrength ? "Yes" : "No";
+                                dataGridView1.Rows[index].Cells["BuyerStrength"].Value = BuyerStrengthIndex;
+                                dataGridView1.Rows[index].Cells["VolumeStrength"].Value = VolumeStrengthIndex;
                             }
                     ));
 
@@ -328,7 +383,7 @@ namespace SecurityBuyCandidates
             DB_BourseEntities ctx = new DB_BourseEntities();
 
             //List<int> GoodSecurityGroupIDs = new List<int> { 45,44,40,42,34,27,24,26,8,11,17,35,15,30,38,18,3,23,1,33,47,43,31,  16,22,28,2,5 };
-            List<int> GoodSecurityGroupIDs = new List<int> { 37, 32, 39, 44, 40, 25, 22, 14, 35, 20, 47, 43, 18, 27, 23, 28, 38, 26, 7, 15, 42, 24, 16, 30, 11, 45, 31, 17, 33, 4, 1, 34, 2, 5, 21, 10, 41 };
+            List<int> GoodSecurityGroupIDs = new List<int> { 37, 32, 39, 44, 40, 25, 22, 14, 35, 20, 47, 43, 18, 27, 23, 28, 38, 26, 15, 42, 24, 16, 30, 11, 45, 31, 17, 33, 4, 1, 34, 2, 5, 21, 10, 41 };
             
 
 
@@ -437,6 +492,121 @@ namespace SecurityBuyCandidates
 
                     flag = false;
 
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+
+            return GoodSecurities;
+        }
+
+        private List<Security> GoodSecuritiesAll()
+        {
+            List<Security> GoodSecurities = new List<Security>();
+
+            //List<int> GoodSecurityGroupsList = GoodSecurityGroups();
+
+            progressBar1.Value = 0;
+
+            try
+            {
+                DB_BourseEntities ctx = new DB_BourseEntities();
+
+                bool flag = false;
+
+                //List<int> tmp = new List<int>() { 2236, 2148, 2271, 2420, 2520 };
+                //List<vwSecurity> Securities = ctx.vwSecurity.Where(x => tmp.Contains(x.SecurityID)).OrderBy(x => x.SecurityName).ToList();
+
+                //List<Security> Securities = ctx.vwSecurity.Where(x => x.SecurityTypeID == 6 && x.EPS > 0 && x.SharesCount >= 180000000 && GoodSecurityGroupsList.Contains(x.SecurityGroupID)).Select(x => new Security { SecurityGroupID = x.SecurityGroupID, SecurityDescription = x.SecurityDescription, MarketType = x.MarketType, SecurityGroupTitle = x.SecurityGroupTitle, SecurityName = x.SecurityName, SecurityID = x.SecurityID }).OrderBy(x => x.SecurityName).ToList();
+                List<Security> Securities = ctx.vwSecurity.Where(x => x.SecurityTypeID == 6 && x.EPS > 0 && x.SharesCount >= 180000000).Select(x => new Security { SecurityGroupID = x.SecurityGroupID, SecurityDescription = x.SecurityDescription, MarketType = x.MarketType, SecurityGroupTitle = x.SecurityGroupTitle, SecurityName = x.SecurityName, SecurityID = x.SecurityID }).OrderBy(x => x.SecurityName).ToList();
+
+                for (int i = 0; i < Securities.Count; i++)
+                {
+                    progressBar1.Value = (int)(((i + 1) * 100) / Securities.Count);
+
+                    Security Security = Securities[i];
+
+                    //DateTime Date = dtpDate.Value.Date;
+
+                    //List<vwSecurityHistory> PriceList = ctx.vwSecurityHistory.Where(x => x.AdjustmentTypeID == 18 && x.SecurityID == Security.SecurityID && x.Date <= Date).OrderByDescending(x => x.Date).Take(MAX_DAYS).ToList();
+
+                    //int k = 1;
+                    //int l = 0;
+                    //double firstPrice = 0;
+                    //double lastPrice = 0;
+
+                    ////if (Security.SecurityID == 2521)
+                    //{
+                    //    for (int j = 0; j < PriceList.Count - Ozymandias_Period; j++)
+                    //    {
+                    //        //double wma = WMA(PriceList, (int)nudWMA.Value, j);
+                    //        double ozymandias = Ozymandias(PriceList, j);
+
+                    //        l = j;
+
+                    //        if (ozymandias <= PriceList[j].ClosingPrice)
+                    //        {
+                    //            if (k == 1)
+                    //            {
+                    //                lastPrice = (double)PriceList[j].ClosingPrice;
+                    //            }
+
+                    //            k++;
+                    //        }
+                    //        else
+                    //        {
+                    //            firstPrice = (double)PriceList[j].ClosingPrice;
+
+                    //            //if ((((lastPrice - firstPrice) / firstPrice) * 100) > 10 && (k >= 15) && (k == l + 1))
+                    //            //if ((k >= 15) && (k == l + 1))
+                    //            //{
+                    //            //    flag = false;
+                    //            //    break;
+                    //            //}
+                    //            //else if ((((lastPrice - firstPrice) / firstPrice) * 100) > 10 && (k >= nudMinGrowth.Value))
+                    //            //else
+                    //            if (((((double)(lastPrice - firstPrice) / firstPrice) * 100) / (double)k > 1.0) && (k >= 20) && (l + 1 > k))
+                    //            //if ((k >= 20) && (l + 1 > k))
+                    //            {
+                    //                flag = true;
+                    //                break;
+                    //            }
+                    //            //else if ((k > 10) && (k < 20) && (l + 1 > k))
+                    //            //{
+                    //            //    flag = false;
+                    //            //    break;
+                    //            //}
+
+
+                    //            k = 1;
+
+                    //        }
+
+                    //    }
+                    //}
+
+
+                    //if (flag)
+                    //{
+                    //    Growth Growth = CurrentGrowth(PriceList);
+
+                    //    //if ((k >= 20) && (l + 1 - k >= nudMinCorrection.Value)) //&& (l + 1 - k <= nudMaxCorrection.Value))
+                    //    //if ((k >= 20) && (l + 1 - k >= 20 || l + 1 - k <= 10))
+                    //    if ((k >= 20) && (l + 1 - k - Growth.Days >= 20))
+                    //    {
+                    //        //Security.Comment = string.Format("Growth for {0} days, Correction for {1} days, over {2} days.", k, l + 1 - k, l + 1);
+                    //        GoodSecurities.Add(Security);
+                    //    }
+                    //}
+
+                    //flag = false;
+
+                    GoodSecurities.Add(Security);
                 }
 
 

@@ -32,10 +32,8 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.nudMaxGrowthDays = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
-            this.nudMaxGrowthPercent = new System.Windows.Forms.NumericUpDown();
+            this.nudMaxAvgGrowthPercent = new System.Windows.Forms.NumericUpDown();
             this.label14 = new System.Windows.Forms.Label();
-            this.nudMinGrowthPercent = new System.Windows.Forms.NumericUpDown();
-            this.label15 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.dtpDate = new System.Windows.Forms.DateTimePicker();
             this.nudMinGrowthDays = new System.Windows.Forms.NumericUpDown();
@@ -68,11 +66,11 @@
             this.BuyerStrength = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.VolumeStrength = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Comment = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.chbAll = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudMaxGrowthDays)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudMaxGrowthPercent)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudMinGrowthPercent)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudMaxAvgGrowthPercent)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMinGrowthDays)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tabPage2.SuspendLayout();
@@ -98,12 +96,11 @@
             // tabPage1
             // 
             this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage1.Controls.Add(this.chbAll);
             this.tabPage1.Controls.Add(this.nudMaxGrowthDays);
             this.tabPage1.Controls.Add(this.label2);
-            this.tabPage1.Controls.Add(this.nudMaxGrowthPercent);
+            this.tabPage1.Controls.Add(this.nudMaxAvgGrowthPercent);
             this.tabPage1.Controls.Add(this.label14);
-            this.tabPage1.Controls.Add(this.nudMinGrowthPercent);
-            this.tabPage1.Controls.Add(this.label15);
             this.tabPage1.Controls.Add(this.label10);
             this.tabPage1.Controls.Add(this.dtpDate);
             this.tabPage1.Controls.Add(this.nudMinGrowthDays);
@@ -122,7 +119,7 @@
             // 
             this.nudMaxGrowthDays.Location = new System.Drawing.Point(300, 20);
             this.nudMaxGrowthDays.Maximum = new decimal(new int[] {
-            200,
+            2000,
             0,
             0,
             0});
@@ -130,7 +127,7 @@
             this.nudMaxGrowthDays.Size = new System.Drawing.Size(47, 20);
             this.nudMaxGrowthDays.TabIndex = 25;
             this.nudMaxGrowthDays.Value = new decimal(new int[] {
-            13,
+            20,
             0,
             0,
             0});
@@ -145,64 +142,43 @@
             this.label2.TabIndex = 24;
             this.label2.Text = "Maximum Growth days:";
             // 
-            // nudMaxGrowthPercent
+            // nudMaxAvgGrowthPercent
             // 
-            this.nudMaxGrowthPercent.Location = new System.Drawing.Point(675, 20);
-            this.nudMaxGrowthPercent.Maximum = new decimal(new int[] {
+            this.nudMaxAvgGrowthPercent.DecimalPlaces = 1;
+            this.nudMaxAvgGrowthPercent.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            65536});
+            this.nudMaxAvgGrowthPercent.Location = new System.Drawing.Point(532, 20);
+            this.nudMaxAvgGrowthPercent.Maximum = new decimal(new int[] {
             2000,
             0,
             0,
             0});
-            this.nudMaxGrowthPercent.Name = "nudMaxGrowthPercent";
-            this.nudMaxGrowthPercent.Size = new System.Drawing.Size(47, 20);
-            this.nudMaxGrowthPercent.TabIndex = 23;
-            this.nudMaxGrowthPercent.Value = new decimal(new int[] {
-            26,
+            this.nudMaxAvgGrowthPercent.Name = "nudMaxAvgGrowthPercent";
+            this.nudMaxAvgGrowthPercent.Size = new System.Drawing.Size(47, 20);
+            this.nudMaxAvgGrowthPercent.TabIndex = 23;
+            this.nudMaxAvgGrowthPercent.Value = new decimal(new int[] {
+            35,
             0,
             0,
-            0});
+            65536});
             // 
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(539, 22);
+            this.label14.Location = new System.Drawing.Point(353, 22);
             this.label14.Name = "label14";
             this.label14.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label14.Size = new System.Drawing.Size(130, 13);
+            this.label14.Size = new System.Drawing.Size(173, 13);
             this.label14.TabIndex = 22;
-            this.label14.Text = "Maximum Growth percent:";
-            // 
-            // nudMinGrowthPercent
-            // 
-            this.nudMinGrowthPercent.Location = new System.Drawing.Point(486, 20);
-            this.nudMinGrowthPercent.Maximum = new decimal(new int[] {
-            200,
-            0,
-            0,
-            0});
-            this.nudMinGrowthPercent.Name = "nudMinGrowthPercent";
-            this.nudMinGrowthPercent.Size = new System.Drawing.Size(47, 20);
-            this.nudMinGrowthPercent.TabIndex = 21;
-            this.nudMinGrowthPercent.Value = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(353, 22);
-            this.label15.Name = "label15";
-            this.label15.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label15.Size = new System.Drawing.Size(127, 13);
-            this.label15.TabIndex = 20;
-            this.label15.Text = "Minimum Growth percent:";
+            this.label14.Text = "Maximum Average Growth percent:";
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(824, 22);
+            this.label10.Location = new System.Drawing.Point(585, 22);
             this.label10.Name = "label10";
             this.label10.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.label10.Size = new System.Drawing.Size(33, 13);
@@ -211,7 +187,7 @@
             // 
             // dtpDate
             // 
-            this.dtpDate.Location = new System.Drawing.Point(863, 20);
+            this.dtpDate.Location = new System.Drawing.Point(624, 20);
             this.dtpDate.Name = "dtpDate";
             this.dtpDate.Size = new System.Drawing.Size(200, 20);
             this.dtpDate.TabIndex = 18;
@@ -220,7 +196,7 @@
             // 
             this.nudMinGrowthDays.Location = new System.Drawing.Point(125, 20);
             this.nudMinGrowthDays.Maximum = new decimal(new int[] {
-            200,
+            2000,
             0,
             0,
             0});
@@ -228,7 +204,7 @@
             this.nudMinGrowthDays.Size = new System.Drawing.Size(47, 20);
             this.nudMinGrowthDays.TabIndex = 13;
             this.nudMinGrowthDays.Value = new decimal(new int[] {
-            5,
+            3,
             0,
             0,
             0});
@@ -278,9 +254,9 @@
             // 
             // btnAnalyse
             // 
-            this.btnAnalyse.Location = new System.Drawing.Point(1108, 17);
+            this.btnAnalyse.Location = new System.Drawing.Point(969, 17);
             this.btnAnalyse.Name = "btnAnalyse";
-            this.btnAnalyse.Size = new System.Drawing.Size(140, 23);
+            this.btnAnalyse.Size = new System.Drawing.Size(161, 23);
             this.btnAnalyse.TabIndex = 9;
             this.btnAnalyse.Text = "Analyse";
             this.btnAnalyse.UseVisualStyleBackColor = true;
@@ -510,6 +486,16 @@
             this.Comment.Name = "Comment";
             this.Comment.ReadOnly = true;
             // 
+            // chbAll
+            // 
+            this.chbAll.AutoSize = true;
+            this.chbAll.Location = new System.Drawing.Point(830, 23);
+            this.chbAll.Name = "chbAll";
+            this.chbAll.Size = new System.Drawing.Size(37, 17);
+            this.chbAll.TabIndex = 26;
+            this.chbAll.Text = "All";
+            this.chbAll.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -522,8 +508,7 @@
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudMaxGrowthDays)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudMaxGrowthPercent)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudMinGrowthPercent)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudMaxAvgGrowthPercent)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMinGrowthDays)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.tabPage2.ResumeLayout(false);
@@ -555,10 +540,8 @@
         private System.Windows.Forms.ProgressBar progressBar2;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.DateTimePicker dtpDate;
-        private System.Windows.Forms.NumericUpDown nudMaxGrowthPercent;
+        private System.Windows.Forms.NumericUpDown nudMaxAvgGrowthPercent;
         private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.NumericUpDown nudMinGrowthPercent;
-        private System.Windows.Forms.Label label15;
         private System.Windows.Forms.NumericUpDown nudMaxGrowthDays;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Index2;
@@ -576,6 +559,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn BuyerStrength;
         private System.Windows.Forms.DataGridViewTextBoxColumn VolumeStrength;
         private System.Windows.Forms.DataGridViewTextBoxColumn Comment;
+        private System.Windows.Forms.CheckBox chbAll;
     }
 }
 
