@@ -176,6 +176,15 @@ namespace SecurityBuyCandidates
                 }
 
                 p = ((double)(lastPrice - firstPrice) / firstPrice) * 100;
+
+                if (p == 0.0)
+                {
+                    k = -1;
+                }
+                else
+                {
+                    k--;
+                }
             }
 
             return new Growth {Days = k, Percent = p };
@@ -302,7 +311,15 @@ namespace SecurityBuyCandidates
 
                     if (BuyerStrength >= 1.0)
                     {
-                        BuyerStrengthIndex += (Growth.Days - i);
+                        if (BuyerStrength == 1.0)
+                        {
+                            BuyerStrengthIndex += 1;
+                        }
+                        else
+                        {
+                            BuyerStrengthIndex += (Growth.Days - i);
+                        }
+                        
                     }
 
                     //////////////////////////////////////////
@@ -313,23 +330,48 @@ namespace SecurityBuyCandidates
                     /////////////////////////////////////////
 
                     long SumVolume = 0;
+                    int MA = 60;
 
-                    for (int j = 1 + i; j < 6 + i; j++)
+                    for (int j = 1 + i; j < MA + 1 + i; j++)
                     {
-                        SumVolume += PriceList[j].Volume;
+                        if (PriceList.Count >= j+1)
+                        {
+                            SumVolume += PriceList[j].Volume;
+                        }
+                        
                     }
 
-                    if (((double)PriceList[i].Volume / ((double)SumVolume / (double)5)) >= 2.0)
+                    if (((double)PriceList[i].Volume / ((double)SumVolume / (double)MA)) >= 1.0)
                     {
                         VolumeStrengthIndex++;
                     }
+
+                    ///////////////////////////////////////
+                    //if (PriceList[i].NaturalBuyVolume != null)
+                    //{
+                    //    double VolumeStrength = (double)(PriceList[i].LegalSellVolume - PriceList[i].LegalBuyVolume);
+
+                    //    if (VolumeStrength >= 0.0)
+                    //    {
+                    //        if (VolumeStrength == 0.0)
+                    //        {
+                    //            VolumeStrengthIndex += 1;
+                    //        }
+                    //        else
+                    //        {
+                    //            VolumeStrengthIndex += (Growth.Days - i);
+                    //        }
+
+                    //    }
+                    //}
 
 
                 }
 
                 BuyerStrengthIndex = Math.Round(BuyerStrengthIndex / ((double)(Growth.Days * (Growth.Days + 1)) / (double)2), 2);
-                //VolumeStrengthIndex = VolumeStrengthIndex / (double)Growth.Days;
-                VolumeStrengthIndex = Math.Round(VolumeStrengthIndex, 2);
+                VolumeStrengthIndex = Math.Round(VolumeStrengthIndex / (double)Growth.Days, 2);
+                //VolumeStrengthIndex = Math.Round(VolumeStrengthIndex, 2);
+                //VolumeStrengthIndex = Math.Round(VolumeStrengthIndex / ((double)(Growth.Days * (Growth.Days + 1)) / (double)2), 2);
 
                 //try
                 //{
@@ -345,32 +387,48 @@ namespace SecurityBuyCandidates
                 //catch (Exception ex) { Console.WriteLine(ex); }
 
 
+                bool flag = false;
 
-                if ((Growth.Percent / (double)Growth.Days >= 0.75) && ((Growth.Days >= nudMinGrowthDays.Value) && (Growth.Days <= nudMaxGrowthDays.Value)) && (AvgGrowthPercent <= (double)nudMaxAvgGrowthPercent.Value))
+                if ((AvgGrowthPercent >= 1.0) && ((Growth.Days >= nudMinGrowthDays.Value) && (Growth.Days <= nudMaxGrowthDays.Value)) && (AvgGrowthPercent <= (double)nudMaxAvgGrowthPercent.Value))
+                {
+                    flag = true;
+
+                    if (!chbAll.Checked)
+                    {
+                        flag = false;
+
+                        if ((AvgGrowthPercent >= 2.0 && BuyerStrengthIndex >= 0.5) || (AvgGrowthPercent >= 2.0 && VolumeStrengthIndex >= 0.5) || (BuyerStrengthIndex >= 0.5 && VolumeStrengthIndex >= 0.5))
+                        {
+                            flag = true;
+                        }
+                    }
+                }
+
+
+                if (flag)
                 {
                     dataGridView1.Invoke(new Action(
                              () =>
-                            {
-                                var index = dataGridView1.Rows.Add();
-                                dataGridView1.Rows[index].Cells["SecurityName"].Value = Security.SecurityName;
-                                dataGridView1.Rows[index].Cells["SecurityDescription"].Value = Security.SecurityDescription;
-                                dataGridView1.Rows[index].Cells["MarketType"].Value = Security.MarketType;
-                                dataGridView1.Rows[index].Cells["SecurityGroupTitle"].Value = Security.SecurityGroupTitle;
-                                //dataGridView1.Rows[index].Cells["Comment"].Value = Security.Comment + string.Format(" Current Growth Percent: {0}, Current Growth Days: {1}.", Math.Round(Growth.Percent, 2), Growth.Days);
+                             {
+                                 var index = dataGridView1.Rows.Add();
+                                 dataGridView1.Rows[index].Cells["SecurityName"].Value = Security.SecurityName;
+                                 dataGridView1.Rows[index].Cells["SecurityDescription"].Value = Security.SecurityDescription;
+                                 dataGridView1.Rows[index].Cells["MarketType"].Value = Security.MarketType;
+                                 dataGridView1.Rows[index].Cells["SecurityGroupTitle"].Value = Security.SecurityGroupTitle;
+                                 //dataGridView1.Rows[index].Cells["Comment"].Value = Security.Comment + string.Format(" Current Growth Percent: {0}, Current Growth Days: {1}.", Math.Round(Growth.Percent, 2), Growth.Days);
 
-                                dataGridView1.Rows[index].Cells["GrowthDays"].Value = Growth.Days;
-                                dataGridView1.Rows[index].Cells["GrowthPercent"].Value = Math.Round(Growth.Percent, 2);
-                                dataGridView1.Rows[index].Cells["AvgGrowthPercent"].Value = AvgGrowthPercent;
-                                
+                                 dataGridView1.Rows[index].Cells["GrowthDays"].Value = Growth.Days;
+                                 dataGridView1.Rows[index].Cells["GrowthPercent"].Value = Math.Round(Growth.Percent, 2);
+                                 dataGridView1.Rows[index].Cells["AvgGrowthPercent"].Value = AvgGrowthPercent;
 
-                                dataGridView1.Rows[index].Cells["BuyerStrength"].Value = BuyerStrengthIndex;
-                                dataGridView1.Rows[index].Cells["VolumeStrength"].Value = VolumeStrengthIndex;
-                            }
+
+                                 dataGridView1.Rows[index].Cells["BuyerStrength"].Value = BuyerStrengthIndex;
+                                 dataGridView1.Rows[index].Cells["VolumeStrength"].Value = VolumeStrengthIndex;
+                             }
                     ));
-
-
-
                 }
+
+
             }
             catch (Exception ex)
             {
@@ -426,7 +484,7 @@ namespace SecurityBuyCandidates
                     double firstPrice = 0;
                     double lastPrice = 0;
 
-                    //if (Security.SecurityID == 2521)
+                    //if (Security.SecurityID == 2563)
                     {
                         for (int j = 0; j < PriceList.Count - Ozymandias_Period; j++)
                         {
@@ -456,7 +514,7 @@ namespace SecurityBuyCandidates
                                 //}
                                 //else if ((((lastPrice - firstPrice) / firstPrice) * 100) > 10 && (k >= nudMinGrowth.Value))
                                 //else
-                                if (((((double)(lastPrice - firstPrice) / firstPrice) * 100) / (double)k > 1.0) && (k >= 20) && (l + 1 > k))
+                                if (((((double)(lastPrice - firstPrice) / firstPrice) * 100) / (double)k >= 1.0) && (k >= 20) && (l + 1 > k))
                                 //if ((k >= 20) && (l + 1 > k))
                                 {
                                     flag = true;

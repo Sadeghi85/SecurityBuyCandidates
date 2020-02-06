@@ -160,10 +160,10 @@
             this.nudMaxAvgGrowthPercent.Size = new System.Drawing.Size(47, 20);
             this.nudMaxAvgGrowthPercent.TabIndex = 23;
             this.nudMaxAvgGrowthPercent.Value = new decimal(new int[] {
-            35,
+            4,
             0,
             0,
-            65536});
+            0});
             // 
             // label14
             // 
