@@ -870,6 +870,7 @@ namespace SecurityBuyCandidates
             public int SecurityGroupID { get; set; }
             public string SecurityGroupTitle { get; set; }
             public int cycle { get; set; }
+            public int EPS { get; set; }
 
             public double averageProfit { get; set; }
 
@@ -887,10 +888,157 @@ namespace SecurityBuyCandidates
             public double averageProfit { get; set; }
         }
 
+
+
+
         #endregion
 
-       
+        #region SmartMoney
+        private async void btnAnalyse3_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                DB_BourseEntities ctx = new DB_BourseEntities();
 
-        
+                dataGridView3.Invoke(new Action(
+                             () =>
+                             {
+                                 dataGridView3.Rows.Clear();
+                             }
+                    ));
+
+                progressBar3.Value = 0;
+
+                //List<int> tmp = new List<int>() { 2236, 2148, 2271, 2420, 2520 };
+                //List<vwSecurity> Securities = ctx.vwSecurity.Where(x => tmp.Contains(x.SecurityID)).OrderBy(x => x.SecurityName).ToList();
+
+                //List<vwSecurity> Securities = ctx.vwSecurity.Where(x => x.SecurityTypeID == 6).OrderBy(x => x.SecurityName).ToList();
+
+                
+
+                List<Security> Securities = ctx.vwSecurity.Where(x => x.SecurityTypeID == 6).Select(x => new Security { SecurityGroupID = x.SecurityGroupID, SecurityDescription = x.SecurityDescription, MarketType = x.MarketType, SecurityGroupTitle = x.SecurityGroupTitle, SecurityName = x.SecurityName, SecurityID = x.SecurityID, EPS = x.EPS }).OrderBy(x => x.SecurityName).ToList();
+
+                for (int i = 0; i < Securities.Count; i++)
+                {
+                    Security Security = Securities[i];
+
+                    await Task.Run(() => AnalyseSingle3(Security));
+
+                    progressBar3.Value = (int)(((i + 1) * 100) / Securities.Count);
+                }
+
+                //dataGridView3.Invoke(new Action(
+                //             () =>
+                //             {
+                //                 dataGridView3.Sort(dataGridView1.Columns["BuyerStrength"], ListSortDirection.Descending);
+
+                //             }
+                //    ));
+
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+
+        private void AnalyseSingle3(Security Security)
+        {
+            try
+            {
+                DB_BourseEntities ctx = new DB_BourseEntities();
+
+                double BuyerStrength = 0;
+                double VolumeStrength = 0;
+
+                double MaxClosingPrice = 0;
+                int MaxClosingPriceIndex = 0;
+                double PercentFromMax = 0;
+                double PE = 0;
+                
+                DateTime Date = dtpDate3.Value.Date;
+
+                List<vwSecurityHistory> PriceList = ctx.vwSecurityHistory.Where(x => x.AdjustmentTypeID == 18 && x.SecurityID == Security.SecurityID && x.Date <= Date).OrderByDescending(x => x.Date).Take(MAX_DAYS).ToList();
+
+                if (PriceList.FirstOrDefault(x => x.Date == Date) == null || PriceList.Count < 7)
+                {
+                    return;
+                }
+
+                try
+                {
+                    BuyerStrength = Math.Round(((double)PriceList[0].NaturalBuyVolume / (double)PriceList[0].NaturalBuyCount) / ((double)PriceList[0].NaturalSellVolume / (double)PriceList[0].NaturalSellCount), 2);
+                }
+                catch (Exception ex)
+                {
+                    //Console.WriteLine(ex);
+                    Debug.WriteLine("Natural/Legal info is null: " + Security.SecurityName + " " + PriceList[0].Date);
+                }
+
+
+                for (int i = 1; i < 7; i++)
+                {
+                    VolumeStrength += PriceList[i].Volume;
+                }
+
+                VolumeStrength = Math.Round((double)PriceList[0].Volume / ((double)VolumeStrength / (double)6), 2);
+
+
+                for (int i = 0; i < PriceList.Count; i++)
+                {
+                    if (PriceList[i].ClosingPrice >= MaxClosingPrice)
+                    {
+                        MaxClosingPrice = PriceList[i].ClosingPrice;
+                        MaxClosingPriceIndex = i;
+                    }
+                }
+
+                PercentFromMax = Math.Round(((double)(MaxClosingPrice - PriceList[0].ClosingPrice) / (double)PriceList[0].ClosingPrice) * 100, 2);
+
+                PE = Math.Round((double)PriceList[0].ClosingPrice / (double)Security.EPS, 2);
+
+
+                bool flag = false;
+
+                //if ((AvgGrowthPercent >= 0.5) && ((Growth.Days >= nudMinGrowthDays.Value) && (Growth.Days <= nudMaxGrowthDays.Value)) && (AvgGrowthPercent <= (double)nudMaxAvgGrowthPercent.Value))
+                {
+                    flag = true;
+
+                    
+                }
+
+
+                if (flag)
+                {
+                    dataGridView3.Invoke(new Action(
+                             () =>
+                             {
+                                 var index = dataGridView3.Rows.Add();
+                                 dataGridView3.Rows[index].Cells["SecurityName3"].Value = Security.SecurityName;
+                                 dataGridView3.Rows[index].Cells["SecurityDescription3"].Value = Security.SecurityDescription;
+                                 dataGridView3.Rows[index].Cells["MarketType3"].Value = Security.MarketType;
+                                 dataGridView3.Rows[index].Cells["SecurityGroupTitle3"].Value = Security.SecurityGroupTitle;
+
+                                 dataGridView3.Rows[index].Cells["DaysFromMax3"].Value = MaxClosingPriceIndex;
+                                 dataGridView3.Rows[index].Cells["PercentFromMax3"].Value = PercentFromMax;
+                                 dataGridView3.Rows[index].Cells["EPS3"].Value = Security.EPS;
+                                 dataGridView3.Rows[index].Cells["PE3"].Value = PE;
+
+
+                                 dataGridView3.Rows[index].Cells["BuyerStrength3"].Value = BuyerStrength;
+                                 dataGridView3.Rows[index].Cells["VolumeStrength3"].Value = VolumeStrength;
+                             }
+                    ));
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+        #endregion
     }
 }
