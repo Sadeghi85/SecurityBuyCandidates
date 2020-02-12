@@ -389,7 +389,12 @@ namespace SecurityBuyCandidates
 
                 bool flag = false;
 
-                if ((AvgGrowthPercent >= 1.0) && ((Growth.Days >= nudMinGrowthDays.Value) && (Growth.Days <= nudMaxGrowthDays.Value)) && (AvgGrowthPercent <= (double)nudMaxAvgGrowthPercent.Value))
+                if (Security.SecurityID == 2577)
+                {
+
+                }
+
+                if ((AvgGrowthPercent >= 0.5) && ((Growth.Days >= nudMinGrowthDays.Value) && (Growth.Days <= nudMaxGrowthDays.Value)) && (AvgGrowthPercent <= (double)nudMaxAvgGrowthPercent.Value))
                 {
                     flag = true;
 
@@ -598,8 +603,8 @@ namespace SecurityBuyCandidates
                     //double firstPrice = 0;
                     //double lastPrice = 0;
 
-                    ////if (Security.SecurityID == 2521)
-                    //{
+                    //if (Security.SecurityID == 2577)
+                    {
                     //    for (int j = 0; j < PriceList.Count - Ozymandias_Period; j++)
                     //    {
                     //        //double wma = WMA(PriceList, (int)nudWMA.Value, j);
@@ -646,7 +651,7 @@ namespace SecurityBuyCandidates
                     //        }
 
                     //    }
-                    //}
+                    }
 
 
                     //if (flag)
