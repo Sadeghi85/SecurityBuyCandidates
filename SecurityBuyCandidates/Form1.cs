@@ -20,6 +20,14 @@ namespace SecurityBuyCandidates
         public Form1()
         {
             InitializeComponent();
+
+            drpStrategy3.DataSource = new ComboItem[] {
+                new ComboItem{ ID = 1, Text = "استراتژی یک" },
+                new ComboItem{ ID = 2, Text = "استراتژی دو" },
+                new ComboItem{ ID = 3, Text = "استراتژی سه" }
+            };
+            drpStrategy3.DisplayMember = "Text";
+            drpStrategy3.ValueMember = "ID";
         }
 
         #region Utility Functions
@@ -949,64 +957,62 @@ namespace SecurityBuyCandidates
             {
                 DB_BourseEntities ctx = new DB_BourseEntities();
 
-                double BuyerStrength = 0;
-                double VolumeStrength = 0;
-
-                double MaxClosingPrice = 0;
-                int MaxClosingPriceIndex = 0;
-                double PercentFromMax = 0;
                 double PE = 0;
                 
                 DateTime Date = dtpDate3.Value.Date;
 
-                List<vwSecurityHistory> PriceList = ctx.vwSecurityHistory.Where(x => x.AdjustmentTypeID == 18 && x.SecurityID == Security.SecurityID && x.Date <= Date).OrderByDescending(x => x.Date).Take(MAX_DAYS).ToList();
+                //List<vwSecurityHistory> PriceList = ctx.vwSecurityHistory.Where(x => x.AdjustmentTypeID == 18 && x.SecurityID == Security.SecurityID && x.Date <= Date).OrderByDescending(x => x.Date).Take(MAX_DAYS).ToList();
 
-                if (PriceList.FirstOrDefault(x => x.Date == Date) == null || PriceList.Count < 7)
+                vwSecurityHistory SecurityHistory = ctx.vwSecurityHistory.FirstOrDefault(x => x.AdjustmentTypeID == 18 && x.SecurityID == Security.SecurityID && x.Date == Date);
+
+                if (SecurityHistory == null)
                 {
                     return;
                 }
 
-                try
-                {
-                    BuyerStrength = Math.Round(((double)PriceList[0].NaturalBuyVolume / (double)PriceList[0].NaturalBuyCount) / ((double)PriceList[0].NaturalSellVolume / (double)PriceList[0].NaturalSellCount), 2);
-                }
-                catch (Exception ex)
-                {
-                    //Console.WriteLine(ex);
-                    Debug.WriteLine("Natural/Legal info is null: " + Security.SecurityName + " " + PriceList[0].Date);
-                }
 
 
-                for (int i = 1; i < 7; i++)
-                {
-                    VolumeStrength += PriceList[i].Volume;
-                }
-
-                VolumeStrength = Math.Round((double)PriceList[0].Volume / ((double)VolumeStrength / (double)6), 2);
-
-
-                for (int i = 0; i < PriceList.Count; i++)
-                {
-                    if (PriceList[i].ClosingPrice >= MaxClosingPrice)
-                    {
-                        MaxClosingPrice = PriceList[i].ClosingPrice;
-                        MaxClosingPriceIndex = i;
-                    }
-                }
-
-                PercentFromMax = Math.Round(((double)(MaxClosingPrice - PriceList[0].ClosingPrice) / (double)PriceList[0].ClosingPrice) * 100, 2);
-
-                PE = Math.Round((double)PriceList[0].ClosingPrice / (double)Security.EPS, 2);
+                PE = Math.Round((double)SecurityHistory.ClosingPrice / (double)Security.EPS, 2);
 
 
                 bool flag = false;
 
-                //if ((AvgGrowthPercent >= 0.5) && ((Growth.Days >= nudMinGrowthDays.Value) && (Growth.Days <= nudMaxGrowthDays.Value)) && (AvgGrowthPercent <= (double)nudMaxAvgGrowthPercent.Value))
-                {
-                    flag = true;
+                int id = 0;
 
-                    
+                drpStrategy3.Invoke(new Action(
+                             () =>
+                             {
+                                 id = (int)drpStrategy3.SelectedValue;
+                             }
+                    ));
+
+                
+
+                switch (id)
+                {
+                    case 1:
+                        if (SecurityHistory.BuyerStrength >= 1.5 && SecurityHistory.VolumeStrength >= 3)
+                        {
+                            flag = true;
+                        }
+                        break;
+                    case 2:
+                        if (SecurityHistory.VolumeStrength >= 3 && (SecurityHistory.ClosingPrice > ((double)(SecurityHistory.HighestPrice + SecurityHistory.LowestPrice) / (double)2)))
+                        {
+                            flag = true;
+                        }
+                        break;
+                    case 3:
+                        if (SecurityHistory.BuyerStrength >= 3 && (SecurityHistory.ClosingPrice > ((double)(SecurityHistory.HighestPrice + SecurityHistory.LowestPrice) / (double)2)))
+                        {
+                            flag = true;
+                        }
+                        break;
+                    default:
+
+                        break;
                 }
+                
 
 
                 if (flag)
@@ -1020,14 +1026,13 @@ namespace SecurityBuyCandidates
                                  dataGridView3.Rows[index].Cells["MarketType3"].Value = Security.MarketType;
                                  dataGridView3.Rows[index].Cells["SecurityGroupTitle3"].Value = Security.SecurityGroupTitle;
 
-                                 dataGridView3.Rows[index].Cells["DaysFromMax3"].Value = MaxClosingPriceIndex;
-                                 dataGridView3.Rows[index].Cells["PercentFromMax3"].Value = PercentFromMax;
+                                 
                                  dataGridView3.Rows[index].Cells["EPS3"].Value = Security.EPS;
                                  dataGridView3.Rows[index].Cells["PE3"].Value = PE;
 
 
-                                 dataGridView3.Rows[index].Cells["BuyerStrength3"].Value = BuyerStrength;
-                                 dataGridView3.Rows[index].Cells["VolumeStrength3"].Value = VolumeStrength;
+                                 dataGridView3.Rows[index].Cells["BuyerStrength3"].Value = SecurityHistory.BuyerStrength;
+                                 dataGridView3.Rows[index].Cells["VolumeStrength3"].Value = SecurityHistory.VolumeStrength;
                              }
                     ));
                 }
@@ -1038,6 +1043,12 @@ namespace SecurityBuyCandidates
             {
                 Console.WriteLine(ex);
             }
+        }
+
+        class ComboItem
+        {
+            public int ID { get; set; }
+            public string Text { get; set; }
         }
         #endregion
     }

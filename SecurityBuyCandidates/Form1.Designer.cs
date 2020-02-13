@@ -68,20 +68,19 @@
             this.nudMinGrowth2 = new System.Windows.Forms.NumericUpDown();
             this.label4 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.progressBar3 = new System.Windows.Forms.ProgressBar();
+            this.dtpDate3 = new System.Windows.Forms.DateTimePicker();
+            this.btnAnalyse3 = new System.Windows.Forms.Button();
             this.dataGridView3 = new System.Windows.Forms.DataGridView();
+            this.progressBar3 = new System.Windows.Forms.ProgressBar();
             this.SecurityName3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.SecurityDescription3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MarketType3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.SecurityGroupTitle3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.BuyerStrength3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.VolumeStrength3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DaysFromMax3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PercentFromMax3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.EPS3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PE3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.btnAnalyse3 = new System.Windows.Forms.Button();
-            this.dtpDate3 = new System.Windows.Forms.DateTimePicker();
+            this.drpStrategy3 = new System.Windows.Forms.ComboBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudMaxGrowthDays)).BeginInit();
@@ -517,6 +516,7 @@
             // tabPage3
             // 
             this.tabPage3.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage3.Controls.Add(this.drpStrategy3);
             this.tabPage3.Controls.Add(this.dtpDate3);
             this.tabPage3.Controls.Add(this.btnAnalyse3);
             this.tabPage3.Controls.Add(this.dataGridView3);
@@ -527,12 +527,22 @@
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "پول هوشمند";
             // 
-            // progressBar3
+            // dtpDate3
             // 
-            this.progressBar3.Location = new System.Drawing.Point(3, 403);
-            this.progressBar3.Name = "progressBar3";
-            this.progressBar3.Size = new System.Drawing.Size(1274, 23);
-            this.progressBar3.TabIndex = 11;
+            this.dtpDate3.Location = new System.Drawing.Point(257, 23);
+            this.dtpDate3.Name = "dtpDate3";
+            this.dtpDate3.Size = new System.Drawing.Size(200, 20);
+            this.dtpDate3.TabIndex = 19;
+            // 
+            // btnAnalyse3
+            // 
+            this.btnAnalyse3.Location = new System.Drawing.Point(490, 20);
+            this.btnAnalyse3.Name = "btnAnalyse3";
+            this.btnAnalyse3.Size = new System.Drawing.Size(170, 23);
+            this.btnAnalyse3.TabIndex = 13;
+            this.btnAnalyse3.Text = "Analyse";
+            this.btnAnalyse3.UseVisualStyleBackColor = true;
+            this.btnAnalyse3.Click += new System.EventHandler(this.btnAnalyse3_Click);
             // 
             // dataGridView3
             // 
@@ -548,8 +558,6 @@
             this.SecurityGroupTitle3,
             this.BuyerStrength3,
             this.VolumeStrength3,
-            this.DaysFromMax3,
-            this.PercentFromMax3,
             this.EPS3,
             this.PE3});
             this.dataGridView3.Location = new System.Drawing.Point(3, 49);
@@ -557,6 +565,13 @@
             this.dataGridView3.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.dataGridView3.Size = new System.Drawing.Size(1274, 348);
             this.dataGridView3.TabIndex = 12;
+            // 
+            // progressBar3
+            // 
+            this.progressBar3.Location = new System.Drawing.Point(3, 403);
+            this.progressBar3.Name = "progressBar3";
+            this.progressBar3.Size = new System.Drawing.Size(1274, 23);
+            this.progressBar3.TabIndex = 11;
             // 
             // SecurityName3
             // 
@@ -606,22 +621,6 @@
             this.VolumeStrength3.ReadOnly = true;
             this.VolumeStrength3.Width = 107;
             // 
-            // DaysFromMax3
-            // 
-            this.DaysFromMax3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            this.DaysFromMax3.HeaderText = "DaysFromMax";
-            this.DaysFromMax3.Name = "DaysFromMax3";
-            this.DaysFromMax3.ReadOnly = true;
-            this.DaysFromMax3.Width = 99;
-            // 
-            // PercentFromMax3
-            // 
-            this.PercentFromMax3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            this.PercentFromMax3.HeaderText = "PercentFromMax";
-            this.PercentFromMax3.Name = "PercentFromMax3";
-            this.PercentFromMax3.ReadOnly = true;
-            this.PercentFromMax3.Width = 112;
-            // 
             // EPS3
             // 
             this.EPS3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
@@ -638,22 +637,14 @@
             this.PE3.ReadOnly = true;
             this.PE3.Width = 51;
             // 
-            // btnAnalyse3
+            // drpStrategy3
             // 
-            this.btnAnalyse3.Location = new System.Drawing.Point(990, 20);
-            this.btnAnalyse3.Name = "btnAnalyse3";
-            this.btnAnalyse3.Size = new System.Drawing.Size(170, 23);
-            this.btnAnalyse3.TabIndex = 13;
-            this.btnAnalyse3.Text = "Analyse";
-            this.btnAnalyse3.UseVisualStyleBackColor = true;
-            this.btnAnalyse3.Click += new System.EventHandler(this.btnAnalyse3_Click);
-            // 
-            // dtpDate3
-            // 
-            this.dtpDate3.Location = new System.Drawing.Point(644, 20);
-            this.dtpDate3.Name = "dtpDate3";
-            this.dtpDate3.Size = new System.Drawing.Size(200, 20);
-            this.dtpDate3.TabIndex = 19;
+            this.drpStrategy3.FormattingEnabled = true;
+            this.drpStrategy3.Location = new System.Drawing.Point(106, 23);
+            this.drpStrategy3.Name = "drpStrategy3";
+            this.drpStrategy3.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.drpStrategy3.Size = new System.Drawing.Size(121, 21);
+            this.drpStrategy3.TabIndex = 20;
             // 
             // Form1
             // 
@@ -724,18 +715,17 @@
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.Button btnAnalyse3;
         private System.Windows.Forms.DataGridView dataGridView3;
+        private System.Windows.Forms.ProgressBar progressBar3;
+        private System.Windows.Forms.DateTimePicker dtpDate3;
+        private System.Windows.Forms.ComboBox drpStrategy3;
         private System.Windows.Forms.DataGridViewTextBoxColumn SecurityName3;
         private System.Windows.Forms.DataGridViewTextBoxColumn SecurityDescription3;
         private System.Windows.Forms.DataGridViewTextBoxColumn MarketType3;
         private System.Windows.Forms.DataGridViewTextBoxColumn SecurityGroupTitle3;
         private System.Windows.Forms.DataGridViewTextBoxColumn BuyerStrength3;
         private System.Windows.Forms.DataGridViewTextBoxColumn VolumeStrength3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DaysFromMax3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PercentFromMax3;
         private System.Windows.Forms.DataGridViewTextBoxColumn EPS3;
         private System.Windows.Forms.DataGridViewTextBoxColumn PE3;
-        private System.Windows.Forms.ProgressBar progressBar3;
-        private System.Windows.Forms.DateTimePicker dtpDate3;
     }
 }
 
